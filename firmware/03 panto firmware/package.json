@@ -1,0 +1,111 @@
+{
+  "name": "dualpantoframework",
+  "version": "0.3.0",
+  "description": "dev : Oliver Schneider, Jotaro Shigeyama, Alexander Meißner, Nico Böckhoff, Jonas Bounama, Lukas Wagner, Daniel-Amadeus Johannes Glöckner",
+  "main": "lib/dualpantoframework.js",
+  "scripts": {
+    "install": "npm run build && npm run setup-commit-hook",
+    "build": "npm run script build",
+    "clean": "npm run script clean",
+    "platformio": "npm run script platformio",
+    "config": "npm run script config",
+    "plotter": "npm run script plotter",
+    "docs": "npm run script docs",
+    "unity": "npm run script unity",
+    "script": "node ./utils/scripts/run.js",
+    "svgToJs": "node ./utils/svgConverter/svgToJs.js",
+    "setup-commit-hook": "if-env NODE_ENV=production && echo \" production mode \" || node ./utils/scripts/createJsCommitHook.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HassoPlattnerInstituteHCI/dualpantoframework.git"
+  },
+  "author": "jotaro shigeyama",
+  "license": "ISC",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/HassoPlattnerInstituteHCI/dualpantoframework/issues"
+  },
+  "homepage": "https://github.com/HassoPlattnerInstituteHCI/dualpantoframework#readme",
+  "dependencies": {
+    "@tweenjs/tween.js": "^17.2.0",
+    "co": "^4.6.0",
+    "http-server": "^0.12.1",
+    "if-env": "^1.0.4",
+    "keypress": "^0.2.1",
+    "node-gyp": "^3.6.2",
+    "node-pid-controller": "^1.0.1",
+    "open": "^6.3.0",
+    "play-sound": "^1.1.2",
+    "polygon-offset": "^0.3.1",
+    "say": "^0.16.0",
+    "serialport": "^9.0.7",
+    "usb": "^1.6.0",
+    "websocket": "^1.0.26",
+    "xml2js": "^0.4.19"
+  },
+  "devDependencies": {
+    "documentation": "^11.0.1",
+    "eslint": "^5.15.1",
+    "eslint-config-google": "^0.12.0",
+    "eslint-plugin-jsdoc": "^7.0.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true,
+      "es6": true
+    },
+    "plugins": [
+      "jsdoc"
+    ],
+    "extends": "./node_modules/eslint-config-google/index.js",
+    "rules": {
+      "comma-dangle": [
+        "error",
+        "never"
+      ],
+      "linebreak-style": [
+        "off",
+        "unix"
+      ],
+      "valid-jsdoc": [
+        "off"
+      ],
+      "jsdoc/check-alignment": "error",
+      "jsdoc/check-indentation": "error",
+      "jsdoc/check-param-names": "error",
+      "jsdoc/check-syntax": "error",
+      "jsdoc/check-tag-names": "error",
+      "jsdoc/check-types": "error",
+      "jsdoc/implements-on-classes": "error",
+      "jsdoc/match-description": "error",
+      "jsdoc/newline-after-description": "error",
+      "jsdoc/no-undefined-types": "error",
+      "jsdoc/require-description": [
+        "error",
+        {
+          "contexts": "ClassDeclaration"
+        }
+      ],
+      "jsdoc/require-description-complete-sentence": "error",
+      "jsdoc/require-hyphen-before-param-description": "error",
+      "jsdoc/require-param": "error",
+      "jsdoc/require-param-description": "error",
+      "jsdoc/require-param-name": "error",
+      "jsdoc/require-param-type": "error",
+      "jsdoc/require-returns": "error",
+      "jsdoc/require-returns-check": "error",
+      "jsdoc/require-returns-description": "error",
+      "jsdoc/require-returns-type": "error",
+      "jsdoc/valid-types": "error"
+    },
+    "settings": {
+      "jsdoc": {
+        "tagNamePreference": {
+          "returns": "return"
+        }
+      }
+    }
+  }
+}
