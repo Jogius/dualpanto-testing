@@ -18,6 +18,8 @@ On a hardware level we need to test that the dualpanto can
 
 ### Firmware
 
+Please clone the current panto firmware into `firmware/10 panto firmware` and run `npm run script config`
+
 On a firmware level we need to test that the dualpanto can
 - perform the handshake
 - keep the connection alive

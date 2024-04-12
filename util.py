@@ -35,14 +35,16 @@ def serial_ports():
     return result
 
 
-def compile_firmware(firmware_directory="./firmware/00 template"):
+def compile_firmware(firmware_directory="./firmware/00 template", cleanup=True):
     res = subprocess.call('pio run', cwd=firmware_directory, shell=True)
-    res += subprocess.call('pio run --target clean', cwd=firmware_directory, shell=True)
+    if cleanup:
+        res += subprocess.call('pio run --target clean', cwd=firmware_directory, shell=True)
     return res
 
 
-def upload_firmware(firmware_directory="./firmware/00 template"):
+def upload_firmware(firmware_directory="./firmware/00 template", cleanup=True):
     res = subprocess.call('pio run', cwd=firmware_directory, shell=True)
     res += subprocess.call('pio run --target upload', cwd=firmware_directory, shell=True)
-    res += subprocess.call('pio run --target clean', cwd=firmware_directory, shell=True)
+    if cleanup:
+        res += subprocess.call('pio run --target clean', cwd=firmware_directory, shell=True)
     return res
