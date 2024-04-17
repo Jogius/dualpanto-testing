@@ -30,16 +30,7 @@ void setup()
     m_spi.begin();
 }
 
-void loop(){
-  // send data only when you receive data:
-  // if (Serial.available() > 0) {
-  //   // read the incoming byte:
-  //   incomingByte = Serial.read();
-  //   // say what you got:
-  //   Serial.write(incomingByte);
-  // }
-    
-    
+void loop(){  
     m_spi.beginTransaction(m_settings);
     digitalWrite(13, HIGH);
     digitalWrite(c_hspiSsPin1, HIGH);
@@ -51,24 +42,26 @@ void loop(){
     for(auto i = 0; i < m_values.size()/2; ++i)
     {
         buf = m_spi.transfer16(c_readAngle);
-        Serial.printf("%d", buf);
-        Serial.println();
+        //Serial.printf("%d", buf);
+        //Serial.println();
     }
     digitalWrite(c_hspiSsPin1, HIGH);
     digitalWrite(c_hspiSsPin2, HIGH);
 
     delayMicroseconds(1);
 
+    Serial.printf("channel: %d > ", channel);
+
     if(channel == 0) digitalWrite(c_hspiSsPin1, LOW);
     else if(channel == 1) digitalWrite(c_hspiSsPin2, LOW);
     for(auto i = 0; i < m_values.size()/2; ++i)
     {
         buf = m_spi.transfer16(c_nop);
-        Serial.printf("%d", buf);
-        Serial.println();
+        //Serial.printf("%d", buf);
+        //Serial.println();
         m_values[i + channel*2] = buf & c_dataMask;
-        Serial.printf("m_values%d\t%d\n", i, m_values[i + channel*2]);
-        Serial.println();
+        Serial.printf("%d\t", m_values[i + channel*2]);
+        
     }
     digitalWrite(c_hspiSsPin1, HIGH);
     digitalWrite(c_hspiSsPin2, HIGH);
@@ -76,11 +69,9 @@ void loop(){
     m_spi.endTransaction();
     c_i++;
     channel = c_i % 2;
-
-    // for(int i=0; i < 4; i++){
-    //     m_encoders[i].m_lastValidAngle = m_values[i];
-    //     // DPSerial::sendQueuedDebugLog("zero %u reported=%u", m_zeros[i], m_encoders[i].m_lastValidAngle);
-    // }
-
-  
+    if (channel == 0){
+        Serial.println();
+    } else {
+        Serial.printf("|\t");
+    }
 }
