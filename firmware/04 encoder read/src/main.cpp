@@ -50,7 +50,10 @@ void loop(){
 
     delayMicroseconds(1);
 
-    Serial.printf("channel: %d > ", channel);
+    //Serial.printf("channel: %d > ", channel);
+    if (channel == 0){
+        Serial.printf("\ndptest");
+    }
 
     if(channel == 0) digitalWrite(c_hspiSsPin1, LOW);
     else if(channel == 1) digitalWrite(c_hspiSsPin2, LOW);
@@ -60,8 +63,8 @@ void loop(){
         //Serial.printf("%d", buf);
         //Serial.println();
         m_values[i + channel*2] = buf & c_dataMask;
-        Serial.printf("%d\t", m_values[i + channel*2]);
-        
+        //Serial.printf("%d\t", m_values[i + channel*2]);
+        Serial.printf("%d,", m_values[i + channel*2]);
     }
     digitalWrite(c_hspiSsPin1, HIGH);
     digitalWrite(c_hspiSsPin2, HIGH);
@@ -69,9 +72,4 @@ void loop(){
     m_spi.endTransaction();
     c_i++;
     channel = c_i % 2;
-    if (channel == 0){
-        Serial.println();
-    } else {
-        Serial.printf("|\t");
-    }
 }
