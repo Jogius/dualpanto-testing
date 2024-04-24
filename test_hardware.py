@@ -35,6 +35,13 @@ class HardwareTest(unittest.TestCase):
             res = ser.read(1)
             self.assertEqual(res, message)
 
+    def test_motor(self):
+        res = util.upload_firmware('./firmware/03 motor')
+        self.assertEqual(res, 0, msg='failed to upload firmware')
+        time.sleep(1)
+        print("Press any key to continue")
+        input()
+
     def handle_serial_connection(self):
         print("Connecting...")
         with serial.Serial(config.COM_PORT, 9600, timeout=1, parity=serial.PARITY_EVEN) as ser:
@@ -63,8 +70,8 @@ class HardwareTest(unittest.TestCase):
                     time.sleep(0.01)
 
     def test_encoder(self):
-        #res = util.upload_firmware('./firmware/04 encoder read')
-        #self.assertEqual(res, 0, msg='failed to upload firmware')
+        res = util.upload_firmware('./firmware/04 encoder read')
+        self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
         # move serial connection handling to other thread
         serial_connection_thread = Thread(target=self.handle_serial_connection)
@@ -101,13 +108,7 @@ class HardwareTest(unittest.TestCase):
         except KeyboardInterrupt:
             self.continue_serial_connection_flag = False
 
-    def test_motor(self):
-        with serial.Serial(config.COM_PORT, 9600, timeout=1) as ser:
-            message = b'x'
-            ser.write(message)
-            res = ser.read(1)
-            print(res)
-            self.assertEqual(res, message)
+    
         
 
         
