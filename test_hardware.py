@@ -106,20 +106,29 @@ class HardwareTest(unittest.TestCase):
                 print()
                 for j in range(4, 6): # two endeffector encoders
                     print("#" * (rel_pos[j] // 2))
-                [print() for k in range(4)]
+                print()
                 print("Press CTRL + C to continue")
                 time.sleep(0.05)
                 os.system('cls' if os.name == 'nt' else 'clear')
         except KeyboardInterrupt:
             self.continue_serial_connection_flag = False
 
-    
-        
+    def test_sync(self):
+        res = util.upload_firmware('./firmware/05 move handles in sync')
+        self.assertEqual(res, 0, msg='failed to upload firmware')
+        time.sleep(1)
+        with serial.Serial(config.COM_PORT, 9600, timeout=1) as ser:
+            while True:
+                message = b'dpmotor100234;'
+                ser.write(message)
+                #res = ser.read(1)
+                #print(res)
+               
 
-        
-                
+
 
 if __name__ == "__main__":
     h = HardwareTest()
-    h.test_encoder()
+    #h.test_encoder()
     #h.test_motor()
+    h.test_sync()
