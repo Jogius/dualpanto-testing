@@ -51,8 +51,8 @@ void loop(){
     digitalWrite(c_hspiSsPin2, HIGH);
     
 
-    if (channel == 0) {digitalWrite(c_hspiSsPin1, LOW);}
-    else if(channel == 1) {digitalWrite(c_hspiSsPin2, LOW);}
+    if (channel == 0) {digitalWrite(c_hspiSsPin2, LOW);}
+    else if(channel == 1) {digitalWrite(c_hspiSsPin1, LOW);}
     for(auto i = 0; i < m_values.size()/2; ++i)
     {
         buf = m_spi.transfer16(c_readAngle);
@@ -68,13 +68,14 @@ void loop(){
         Serial.printf("\ndptest");
     }
 
-    if(channel == 0) digitalWrite(c_hspiSsPin1, LOW);
-    else if(channel == 1) digitalWrite(c_hspiSsPin2, LOW);
+    if(channel == 0) digitalWrite(c_hspiSsPin2, LOW);
+    else if(channel == 1) digitalWrite(c_hspiSsPin1, LOW);
     for(auto i = 0; i < m_values.size()/2; ++i)
     {
         buf = m_spi.transfer16(c_nop);
         m_values[i + channel*2] = buf & c_dataMask;
         Serial.printf("%d,", m_values[i + channel*2]);
+      
     }
     digitalWrite(c_hspiSsPin1, HIGH);
     digitalWrite(c_hspiSsPin2, HIGH);

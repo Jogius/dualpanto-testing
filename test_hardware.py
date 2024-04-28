@@ -72,8 +72,8 @@ class HardwareTest(unittest.TestCase):
                     time.sleep(0.01)
 
     def test_encoder(self):
-        #res = util.upload_firmware('./firmware/04 encoder read')
-        #self.assertEqual(res, 0, msg='failed to upload firmware')
+        res = util.upload_firmware('./firmware/04 encoder read')
+        self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
         # move serial connection handling to other thread
         serial_connection_thread = Thread(target=self.handle_serial_connection)
@@ -117,10 +117,10 @@ class HardwareTest(unittest.TestCase):
         res = util.upload_firmware('./firmware/05 move handles in sync')
         self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
-        with serial.Serial(config.COM_PORT, 9600, timeout=1) as ser:
-            while True:
-                message = b'dpmotor100234;'
-                ser.write(message)
+        # with serial.Serial(config.COM_PORT, 9600, timeout=1) as ser:
+        #     while True:
+        #         message = b'dpmotor100234;'
+        #         ser.write(message)
                 #res = ser.read(1)
                 #print(res)
                

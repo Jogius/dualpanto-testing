@@ -40,9 +40,9 @@ static const uint16_t endeffectorPWMPin[2] = {25, 23};
 // #####
 
 //int incomingByte = 0;    // for incoming serial data
+int16_t encoders[6];
+int16_t encoder_zero[6];
 
-
-std::vector<uint16_t> m_values;
 void setup_encoders(){
   pinMode(13, OUTPUT);
   pinMode(c_hspiSsPin1, OUTPUT);
@@ -55,9 +55,72 @@ void setup_encoders(){
           endeffectorEncoderPin[i], endeffectorEncoderPin2[i]);
   }
 
-  m_values.resize(4, 0);
+  //m_values.resize(4, 0);
 
   m_spi.begin();
+}
+
+int16_t overflow_correction[6] = {0,0,0,0,0,0};
+int16_t new_encoder_pos[6];
+void loop_encoders(){
+  for (int channel = 0; channel < 2; channel++){
+    m_spi.beginTransaction(m_settings);
+    digitalWrite(13, HIGH);
+    digitalWrite(c_hspiSsPin1, HIGH);
+    digitalWrite(c_hspiSsPin2, HIGH);
+    if (channel == 0) {digitalWrite(c_hspiSsPin2, LOW);}
+    else if(channel == 1) {digitalWrite(c_hspiSsPin1, LOW);}
+    for(auto i = 0; i < 2; ++i)
+    {
+        buf = m_spi.transfer16(c_readAngle);
+    }
+    digitalWrite(c_hspiSsPin1, HIGH);
+    digitalWrite(c_hspiSsPin2, HIGH);
+
+    delayMicroseconds(1);
+
+    if (channel == 0){
+        //Serial.printf("\ndptest");
+    }
+
+    if(channel == 0) digitalWrite(c_hspiSsPin2, LOW);
+    else if(channel == 1) digitalWrite(c_hspiSsPin1, LOW);
+    for(auto i = 0; i < 2; ++i){
+        buf = m_spi.transfer16(c_nop);
+        if (channel == 0){
+          new_encoder_pos[(!i) + channel*2] = buf & c_dataMask;
+          //Serial.printf("%d,", encoders[(!i) + channel*2]);
+        } else {
+          new_encoder_pos[i + channel*2] = buf & c_dataMask;
+          //Serial.printf("%d,", encoders[i + channel*2]);
+        }
+    }
+    digitalWrite(c_hspiSsPin1, HIGH);
+    digitalWrite(c_hspiSsPin2, HIGH);
+
+    m_spi.endTransaction();
+
+    if (channel == 1){
+        for (int i = 0; i < 2; i++){
+            //Serial.printf("%d,", endeffectorEncoder[i]->read());
+            new_encoder_pos[4 + i] = endeffectorEncoder[i]->read();
+        }
+    }
+  }
+
+  for (int i = 0; i < 6; i++){
+    if (i < 4){
+      if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] > 10000){
+        overflow_correction[i] += 16383;
+      }
+      if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] < -10000){
+        overflow_correction[i] -= 16383;
+      }
+      encoders[i] = new_encoder_pos[i] + overflow_correction[i];
+    } else {
+      encoders[i] = abs(new_encoder_pos[i] % (136 * 2));
+    }
+  }
 }
 
 void setup_motors(){
@@ -97,51 +160,48 @@ void reset_motors(){
   }
 }
 
-int channel = 0;
-int c_i = 0;
-void loop_encoders(){
-  m_spi.beginTransaction(m_settings);
-  digitalWrite(13, HIGH);
-  digitalWrite(c_hspiSsPin1, HIGH);
-  digitalWrite(c_hspiSsPin2, HIGH);
-  if (channel == 0) {digitalWrite(c_hspiSsPin1, LOW);}
-    else if(channel == 1) {digitalWrite(c_hspiSsPin2, LOW);}
-    for(auto i = 0; i < m_values.size()/2; ++i)
-    {
-        buf = m_spi.transfer16(c_readAngle);
-        //Serial.printf("%d", buf);
-        //Serial.println();
-    }
-    digitalWrite(c_hspiSsPin1, HIGH);
-    digitalWrite(c_hspiSsPin2, HIGH);
+void align_motors(){
+  reset_motors();
+  // find zero position
+  // move shorter handle to max
+  loop_encoders();
+  int last_encoder_pos1 = encoders[1] - 100;
+  int last_encoder_pos2 = encoders[2] - 100;
 
-    delayMicroseconds(1);
+  ledcWrite(1, 0.3*PWM_MAX);
+  ledcWrite(2, 0.3*PWM_MAX);
+  delay(10);
 
-    if (channel == 0){
-        Serial.printf("\ndptest");
-    }
+  ledcWrite(1, 0.1*PWM_MAX);
+  ledcWrite(2, 0.1*PWM_MAX);
+  while ((abs(last_encoder_pos1 - encoders[1]) > 30) || (abs(last_encoder_pos2 - encoders[2]) > 30)){
+    //Serial.printf("ok\n");
+    last_encoder_pos1 = encoders[1];
+    last_encoder_pos2 = encoders[2];
+    delay(20);
+    loop_encoders();
+  }
 
-    if(channel == 0) digitalWrite(c_hspiSsPin1, LOW);
-    else if(channel == 1) digitalWrite(c_hspiSsPin2, LOW);
-    for(auto i = 0; i < m_values.size()/2; ++i)
-    {
-        buf = m_spi.transfer16(c_nop);
-        m_values[i + channel*2] = buf & c_dataMask;
-        Serial.printf("%d,", m_values[i + channel*2]);
-    }
-    digitalWrite(c_hspiSsPin1, HIGH);
-    digitalWrite(c_hspiSsPin2, HIGH);
+  ledcWrite(1, 0.1*PWM_MAX);
+  ledcWrite(2, 0.1*PWM_MAX);
 
-    m_spi.endTransaction();
+  delay(200);
 
-    if (channel == 1){
-        for (int i = 0; i < 2; i++){
-            Serial.printf("%d,", endeffectorEncoder[i]->read());
-        }
-    }
+  ledcWrite(0, 0.2*PWM_MAX);
+  ledcWrite(3, 0.2*PWM_MAX);
+  delay(100);
+  ledcWrite(0, 0.05*PWM_MAX);
+  ledcWrite(3, 0.05*PWM_MAX);
 
-    c_i++;
-    channel = c_i % 2;
+  delay(1500);
+  loop_encoders();
+  for (int i = 0; i < 6; i++){ encoder_zero[i] = encoders[i];}
+  delay(100);
+  ledcWrite(1, 0);
+  ledcWrite(2, 0);
+
+  ledcWrite(0, 0);
+  ledcWrite(3, 0);
 }
 
 void loop_motors(){
@@ -161,32 +221,28 @@ void loop_motors(){
       delay(200);
     }
   }
-
-  
-
-
-  //Serial.printf("ok\n");
-  
-  // ledcWrite(4, 0.175*PWM_MAX);
-  // delay(100);
-  // ledcWrite(4, 0);
-  // delay(1000);
-
-  // if (!std::equal(buf2, buf2 + 7, "dpmotor")){
-  //   Serial.printf("no dpmotor");
-  //   return;
-  //   }
   
   delete[] buf2;
 }
 
 void setup(){
   Serial.begin(9600);    // opens serial port, sets data rate to 9600 bps
-  //setup_encoders();
+  setup_encoders();
   setup_motors();
   reset_motors();
+  delay(100);
+  align_motors();
 }
 
 void loop(){  
-  loop_motors();
+  //loop_motors();
+  loop_encoders();
+  for (int i = 0; i < 6; i++){
+    Serial.printf("%d,", encoders[i] - encoder_zero[i]);
+  }
+  Serial.print(" -- ");
+  for (int i = 0; i < 6; i++){
+    Serial.printf("%d,", encoders[i]);
+  }
+  Serial.println("");
 }
