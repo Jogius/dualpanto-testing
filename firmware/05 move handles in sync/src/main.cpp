@@ -165,43 +165,87 @@ void align_motors(){
   // find zero position
   // move shorter handle to max
   loop_encoders();
+  int last_encoder_pos0 = encoders[0] -100;
   int last_encoder_pos1 = encoders[1] - 100;
-  int last_encoder_pos2 = encoders[2] - 100;
-
-  ledcWrite(1, 0.3*PWM_MAX);
-  ledcWrite(2, 0.3*PWM_MAX);
-  delay(10);
-
-  ledcWrite(1, 0.1*PWM_MAX);
-  ledcWrite(2, 0.1*PWM_MAX);
-  while ((abs(last_encoder_pos1 - encoders[1]) > 30) || (abs(last_encoder_pos2 - encoders[2]) > 30)){
+  
+  while ((abs(last_encoder_pos1 - encoders[1]) > 3)){ //|| (abs(last_encoder_pos2 - encoders[2]) > 30)){
     //Serial.printf("ok\n");
     last_encoder_pos1 = encoders[1];
-    last_encoder_pos2 = encoders[2];
-    delay(20);
+    
+    ledcWrite(5, 0.5*PWM_MAX);
+    ledcWrite(0, 0.4*PWM_MAX);
+    delay(5);
+    ledcWrite(5, 0);
+    ledcWrite(0, 0);
+    ledcWrite(4, 0.2*PWM_MAX);
+    delay(10);
+    ledcWrite(4, 0);
+    delay(100);
+    loop_encoders();
+  }
+  while ((abs(last_encoder_pos0 - encoders[0]) > 3)){
+    last_encoder_pos0 = encoders[0];
+    ledcWrite(5, 0.2*PWM_MAX);
+    ledcWrite(4, 0.2*PWM_MAX);
+    delay(10);
+    ledcWrite(5, 0);
+    ledcWrite(4, 0);
+    delay(100);
     loop_encoders();
   }
 
-  ledcWrite(1, 0.1*PWM_MAX);
-  ledcWrite(2, 0.1*PWM_MAX);
+  for (int i = 0; i < 2; i++){ encoder_zero[i] = encoders[i];}
 
-  delay(200);
+  delay(2000);
 
-  ledcWrite(0, 0.2*PWM_MAX);
-  ledcWrite(3, 0.2*PWM_MAX);
-  delay(100);
-  ledcWrite(0, 0.05*PWM_MAX);
-  ledcWrite(3, 0.05*PWM_MAX);
+  // lower handle
 
-  delay(1500);
-  loop_encoders();
-  for (int i = 0; i < 6; i++){ encoder_zero[i] = encoders[i];}
-  delay(100);
-  ledcWrite(1, 0);
-  ledcWrite(2, 0);
+  int last_encoder_pos2 = encoders[2] -100;
+  int last_encoder_pos3 = encoders[3] - 100;
 
-  ledcWrite(0, 0);
-  ledcWrite(3, 0);
+  while ((abs(last_encoder_pos2 - encoders[2]) > 3)){ //|| (abs(last_encoder_pos2 - encoders[2]) > 30)){
+
+    last_encoder_pos2 = encoders[2];
+    
+    ledcWrite(6, 0.5*PWM_MAX);
+    ledcWrite(3, 0.4*PWM_MAX);
+    delay(5);
+    ledcWrite(6, 0);
+    ledcWrite(3, 0);
+    ledcWrite(7, 0.2*PWM_MAX);
+    delay(10);
+    ledcWrite(7, 0);
+    delay(100);
+    loop_encoders();
+  }
+  while ((abs(last_encoder_pos3 - encoders[3]) > 3)){
+    last_encoder_pos3 = encoders[3];
+    ledcWrite(6, 0.2*PWM_MAX);
+    ledcWrite(7, 0.2*PWM_MAX);
+    delay(10);
+    ledcWrite(6, 0);
+    ledcWrite(7, 0);
+    delay(100);
+    loop_encoders();
+  }
+  for (int i = 2; i < 4; i++){ encoder_zero[i] = encoders[i];}
+
+  while ((encoders[0] - encoder_zero[0]) > -3700){
+    ledcWrite(4, 0.2*PWM_MAX);
+    delay(10);
+    ledcWrite(4, 0);
+    delay(50);
+    loop_encoders();
+  }
+
+  while ((encoders[2] - encoder_zero[2]) > -3700){
+    ledcWrite(7, 0.2*PWM_MAX);
+    delay(10);
+    ledcWrite(7, 0);
+    delay(50);
+    loop_encoders();
+  }
+  for (int i = 0; i < 4; i++){ encoder_zero[i] = encoders[i];}
 }
 
 void loop_motors(){
