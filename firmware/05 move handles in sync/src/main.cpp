@@ -136,74 +136,6 @@ void loop_encoders(){
   }
 }
 
-bool calcParity(bool flag, uint16_t data)
-{
-    uint16_t temp = (data & c_dataMask) | (flag << 14);
-    // calculate https://en.wikipedia.org/wiki/Hamming_weight
-    temp -= (temp >> 1) & 0b0101010101010101;
-    temp = (temp & 0b0011001100110011) + ((temp >> 2) & 0b0011001100110011);
-    temp = (temp + (temp >> 4)) & 0b0000111100001111;
-    return ((temp * 0b0000000100000001) >> 8) % 2;
-}
-
-uint16_t msg(bool flag, uint16_t data){
-  bool parity = calcParity(flag, data);
-  return data | (flag << 14) | (parity << 15);
-}
-
-void zero_encoders(uint16_t newZero[4]){
-{
-  m_spi.transfer16(msg(0, 0x16)); //c_highZeroWrite
-
-	m_spi.beginTransaction(m_settings);
-	digitalWrite(c_hspiSsPin1, LOW);
-    for(auto i = 0; i < 2; ++i)
-    {
-      m_spi.transfer16(msg(0, newZero[i] >> 6));
-      //m_encoders[i].transfer(SPIPacket(0, newZero[i] >> 6).m_transmission);
-    }
-	digitalWrite(c_hspiSsPin1, HIGH);
-	// m_spi.endTransaction();
-
-    //lower handle
-	// m_spi.beginTransaction(m_settings);
-	digitalWrite(c_hspiSsPin2, LOW);
-	for (auto i = 0; i < 2; ++i)
-	{
-    m_spi.transfer16(msg(0, newZero[i+2] >> 6));
-		//m_encoders[i+2].transfer(SPIPacket(0, newZero[i+2] >> 6).m_transmission);
-	}
-	digitalWrite(c_hspiSsPin2, HIGH);
-	m_spi.endTransaction();
-
-  m_spi.transfer16(msg(0, 0x17)); //c_lowZeroWrite
-
-  m_spi.beginTransaction(m_settings);
-	digitalWrite(c_hspiSsPin1, LOW);
-    for(auto i = 0; i < 2; ++i)
-    {
-      m_spi.transfer16(msg(0, newZero[i] & 0b111111));
-      //m_encoders[i].transfer(SPIPacket(0, newZero[i] & 0b111111).m_transmission);
-    }
-	digitalWrite(c_hspiSsPin1, HIGH);
-	// m_spi.endTransaction();
-
-    //lower handle
-	// m_spi.beginTransaction(m_settings);
-	digitalWrite(c_hspiSsPin2, LOW);
-	for (auto i = 0; i < 2; ++i)
-	{
-    m_spi.transfer16(msg(0, newZero[i+2] & 0b111111));
-		//m_encoders[i+2].transfer(SPIPacket(0, newZero[i+2] & 0b111111).m_transmission);
-	}
-	digitalWrite(c_hspiSsPin2, HIGH);
-	m_spi.endTransaction();
-
-    //transfer(SPICommands::c_readAngle);
-    m_spi.transfer16(msg(1, 0x3FFF));
-}
-}
-
 void send_encoders(){
   // for (int i = 0; i < 6; i++){
   //   Serial.printf("%d,", encoders[i] - encoder_zero[i]);
@@ -267,7 +199,7 @@ void move_to_end(uint16_t pid){
 }
 
 void move_to(int32_t pos[6]){
-  reset_motors();
+  //reset_motors();
   loop_encoders();
   int32_t last_encoders[6];
   for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
@@ -300,12 +232,16 @@ void move_to(int32_t pos[6]){
       }
       loop_encoders();
     }
-    delay(1);
+    delay(2);
 
     for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
     loop_encoders();
     send_encoders();
   }
+}
+
+void move_in_sync(){
+  move_to
 }
 
 void align_motors(){
@@ -356,23 +292,16 @@ void setup(){
   Serial.begin(9600);    // opens serial port, sets data rate to 9600 bps
   setup_encoders();
   loop_encoders();
-  // uint16_t newZero[4];
-  // for (int i = 0; i < 4; i++ ){
-  //   newZero[i] = encoders[i];
-  // }
-  // zero_encoders(newZero);
-  // setup_motors();
-  // reset_motors();
-  // delay(100);
-  // align_motors();
+  setup_motors();
+  reset_motors();
+  delay(100);
+  align_motors();
   
-  // loop_encoders();
-  // zero_encoders();
-  // loop_encoders();
-  // int32_t new_encoders[6];
-  // for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
-  // new_encoders[0] += 1000;
-  //move_to(new_encoders);
+  loop_encoders();
+  int32_t new_encoders[6];
+  for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
+  new_encoders[0] += 1000;
+  move_to(new_encoders);
 }
 
 void loop(){  
