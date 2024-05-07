@@ -105,7 +105,7 @@ class HardwareTest(unittest.TestCase):
                     print()
                 print()
                 for j in range(4, 6): # two endeffector encoders
-                    print("#" * (rel_pos[j] // 2))
+                    print("#" * (rel_pos[j] // 4))
                 print()
                 print("Press CTRL + C to continue")
                 time.sleep(0.05)

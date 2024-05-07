@@ -40,7 +40,7 @@ static const uint16_t endeffectorPWMPin[2] = {25, 23};
 // #####
 
 //int incomingByte = 0;    // for incoming serial data
-int32_t encoders[6] = {0,0,0,0,0,0};
+uint16_t encoders[6] = {0,0,0,0,0,0};
 int32_t encoder_zero[6];
 
 void setup_encoders(){
@@ -110,7 +110,7 @@ void loop_encoders(){
   }
 
   for (int i = 0; i < 6; i++){
-    if (i == 1 || i == 2) { new_encoder_pos[i] = - new_encoder_pos[i];}
+    //if (i == 1 || i == 2) { new_encoder_pos[i] = - new_encoder_pos[i];}
 
     if (i < 4){
     int32_t diff = new_encoder_pos[i] - last_encoder_pos[i];
@@ -128,7 +128,7 @@ void loop_encoders(){
       // if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] < -10000){
       //   overflow_correction[i] -= 16383;
       // }
-      encoders[i] = new_encoder_pos[i] + overflow_correction[i] - encoder_zero[i];
+      encoders[i] = new_encoder_pos[i]; //+ overflow_correction[i] - encoder_zero[i];
     } else {
       encoders[i] = abs(new_encoder_pos[i] % (136 * 2));
     }
@@ -147,19 +147,20 @@ bool calcParity(bool flag, uint16_t data)
 }
 
 uint16_t msg(bool flag, uint16_t data){
-  
+  bool parity = calcParity(flag, data);
+  return data | (flag << 14) | (parity << 15);
 }
 
-void zero_encoders(std::vector<uint16_t> newZero){
+void zero_encoders(uint16_t newZero[4]){
 {
-  m_spi.transfer16(0x16 | 0 | calcParity(0, 0x16)); //c_highZeroWrite
+  m_spi.transfer16(msg(0, 0x16)); //c_highZeroWrite
 
 	m_spi.beginTransaction(m_settings);
 	digitalWrite(c_hspiSsPin1, LOW);
     for(auto i = 0; i < 2; ++i)
     {
-      m_spi.transfer16(newZero >> 6);
-      m_encoders[i].transfer(SPIPacket(0, newZero[i] >> 6).m_transmission);
+      m_spi.transfer16(msg(0, newZero[i] >> 6));
+      //m_encoders[i].transfer(SPIPacket(0, newZero[i] >> 6).m_transmission);
     }
 	digitalWrite(c_hspiSsPin1, HIGH);
 	// m_spi.endTransaction();
@@ -167,27 +168,22 @@ void zero_encoders(std::vector<uint16_t> newZero){
     //lower handle
 	// m_spi.beginTransaction(m_settings);
 	digitalWrite(c_hspiSsPin2, LOW);
-	for (auto i = 0; i < m_numberOfEncoders / 2; ++i)
+	for (auto i = 0; i < 2; ++i)
 	{
-		m_encoders[i+2].transfer(SPIPacket(0, newZero[i+2] >> 6).m_transmission);
+    m_spi.transfer16(msg(0, newZero[i+2] >> 6));
+		//m_encoders[i+2].transfer(SPIPacket(0, newZero[i+2] >> 6).m_transmission);
 	}
 	digitalWrite(c_hspiSsPin2, HIGH);
 	m_spi.endTransaction();
 
-    transfer(SPICommands::c_lowZeroWrite);
+  m_spi.transfer16(msg(0, 0x17)); //c_lowZeroWrite
 
-    // begin();
-    // for(auto i = 0; i < m_numberOfEncoders; ++i)
-    // {
-    //     m_encoders[i].transfer(SPIPacket(0, newZero[i] & 0b111111).m_transmission);
-    // }
-    // end();
-
-    m_spi.beginTransaction(m_settings);
+  m_spi.beginTransaction(m_settings);
 	digitalWrite(c_hspiSsPin1, LOW);
-    for(auto i = 0; i < m_numberOfEncoders/2; ++i)
+    for(auto i = 0; i < 2; ++i)
     {
-        m_encoders[i].transfer(SPIPacket(0, newZero[i] & 0b111111).m_transmission);
+      m_spi.transfer16(msg(0, newZero[i] & 0b111111));
+      //m_encoders[i].transfer(SPIPacket(0, newZero[i] & 0b111111).m_transmission);
     }
 	digitalWrite(c_hspiSsPin1, HIGH);
 	// m_spi.endTransaction();
@@ -195,22 +191,24 @@ void zero_encoders(std::vector<uint16_t> newZero){
     //lower handle
 	// m_spi.beginTransaction(m_settings);
 	digitalWrite(c_hspiSsPin2, LOW);
-	for (auto i = 0; i < m_numberOfEncoders / 2; ++i)
+	for (auto i = 0; i < 2; ++i)
 	{
-		m_encoders[i+2].transfer(SPIPacket(0, newZero[i+2] & 0b111111).m_transmission);
+    m_spi.transfer16(msg(0, newZero[i+2] & 0b111111));
+		//m_encoders[i+2].transfer(SPIPacket(0, newZero[i+2] & 0b111111).m_transmission);
 	}
 	digitalWrite(c_hspiSsPin2, HIGH);
 	m_spi.endTransaction();
 
     //transfer(SPICommands::c_readAngle);
+    m_spi.transfer16(msg(1, 0x3FFF));
 }
 }
 
 void send_encoders(){
-  for (int i = 0; i < 6; i++){
-    Serial.printf("%d,", encoders[i] - encoder_zero[i]);
-  }
-  Serial.print(" -- ");
+  // for (int i = 0; i < 6; i++){
+  //   Serial.printf("%d,", encoders[i] - encoder_zero[i]);
+  // }
+  // Serial.print(" -- ");
   for (int i = 0; i < 6; i++){
     Serial.printf("%d,", encoders[i]);
   }
@@ -331,6 +329,7 @@ void align_motors(){
   int correction[4] = {3700, -4000, -4000, 3700};
   for (int i = 0; i < 4; i++){ encoder_zero[i] -= correction[i];}
 
+
   // while ((encoders[0] - encoder_zero[0]) > -3700){
   //   ledcWrite(4, 0.4*PWM_MAX);
   //   delay(5);
@@ -356,18 +355,24 @@ void loop_motors(){
 void setup(){
   Serial.begin(9600);    // opens serial port, sets data rate to 9600 bps
   setup_encoders();
-  setup_motors();
-  reset_motors();
-  delay(100);
-  //align_motors();
+  loop_encoders();
+  // uint16_t newZero[4];
+  // for (int i = 0; i < 4; i++ ){
+  //   newZero[i] = 0;//encoders[i];
+  // }
+  // zero_encoders(newZero);
+  // setup_motors();
+  // reset_motors();
+  // delay(100);
+  // align_motors();
   
-  loop_encoders();
-  zero_encoders();
-  loop_encoders();
-  int32_t new_encoders[6];
-  for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
-  new_encoders[0] += 1000;
-  move_to(new_encoders);
+  // loop_encoders();
+  // zero_encoders();
+  // loop_encoders();
+  // int32_t new_encoders[6];
+  // for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
+  // new_encoders[0] += 1000;
+  //move_to(new_encoders);
 }
 
 void loop(){  
