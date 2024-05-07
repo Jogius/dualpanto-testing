@@ -40,7 +40,7 @@ static const uint16_t endeffectorPWMPin[2] = {25, 23};
 // #####
 
 //int incomingByte = 0;    // for incoming serial data
-uint16_t encoders[6] = {0,0,0,0,0,0};
+int16_t encoders[6] = {0,0,0,0,0,0};
 int32_t encoder_zero[6];
 
 void setup_encoders(){
@@ -110,25 +110,25 @@ void loop_encoders(){
   }
 
   for (int i = 0; i < 6; i++){
-    //if (i == 1 || i == 2) { new_encoder_pos[i] = - new_encoder_pos[i];}
+    if (i == 1 || i == 2) { new_encoder_pos[i] = 16383 - new_encoder_pos[i];}
 
     if (i < 4){
-    int32_t diff = new_encoder_pos[i] - last_encoder_pos[i];
-    if (abs(new_encoder_pos[i] - last_encoder_pos[i] - 16383) < abs(diff)){
-      //diff -= 16383;
-      overflow_correction[i] -= 16383;
-    } else if (abs(new_encoder_pos[i] - last_encoder_pos[i] + 16383) < abs(diff)){
-      //diff += 16383;
-      overflow_correction[i] += 16383;
-    }
+    // int32_t diff = new_encoder_pos[i] - last_encoder_pos[i];
+    // if (abs(new_encoder_pos[i] - last_encoder_pos[i] - 16383) < abs(diff)){
+    //   //diff -= 16383;
+    //   overflow_correction[i] -= 16383;
+    // } else if (abs(new_encoder_pos[i] - last_encoder_pos[i] + 16383) < abs(diff)){
+    //   //diff += 16383;
+    //   overflow_correction[i] += 16383;
+    //}
     //encoders[i] += diff;
-      // if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] > 10000){
-      //   overflow_correction[i] += 16383;
-      // }
-      // if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] < -10000){
-      //   overflow_correction[i] -= 16383;
-      // }
-      encoders[i] = new_encoder_pos[i]; //+ overflow_correction[i] - encoder_zero[i];
+      if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] > 10000){
+        overflow_correction[i] += 16383;
+      }
+      if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] < -10000){
+        overflow_correction[i] -= 16383;
+      }
+      encoders[i] = new_encoder_pos[i] + overflow_correction[i] - encoder_zero[i];
     } else {
       encoders[i] = abs(new_encoder_pos[i] % (136 * 2));
     }
@@ -358,7 +358,7 @@ void setup(){
   loop_encoders();
   // uint16_t newZero[4];
   // for (int i = 0; i < 4; i++ ){
-  //   newZero[i] = 0;//encoders[i];
+  //   newZero[i] = encoders[i];
   // }
   // zero_encoders(newZero);
   // setup_motors();
