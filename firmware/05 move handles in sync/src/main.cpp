@@ -40,7 +40,7 @@ static const uint16_t endeffectorPWMPin[2] = {25, 23};
 // #####
 
 //int incomingByte = 0;    // for incoming serial data
-int16_t encoders[6] = {0,0,0,0,0,0};
+int32_t encoders[6] = {0,0,0,0,0,0};
 int32_t encoder_zero[6];
 
 void setup_encoders(){
@@ -113,21 +113,22 @@ void loop_encoders(){
     if (i == 1 || i == 2) { new_encoder_pos[i] = 16383 - new_encoder_pos[i];}
 
     if (i < 4){
-    // int32_t diff = new_encoder_pos[i] - last_encoder_pos[i];
-    // if (abs(new_encoder_pos[i] - last_encoder_pos[i] - 16383) < abs(diff)){
-    //   //diff -= 16383;
-    //   overflow_correction[i] -= 16383;
-    // } else if (abs(new_encoder_pos[i] - last_encoder_pos[i] + 16383) < abs(diff)){
-    //   //diff += 16383;
-    //   overflow_correction[i] += 16383;
-    //}
+    int32_t diff = new_encoder_pos[i] - last_encoder_pos[i];
+    if (abs(new_encoder_pos[i] - last_encoder_pos[i] - 16383) < abs(diff)){
+      //diff -= 16383;
+      overflow_correction[i] -= 16383;
+    } 
+    if (abs(new_encoder_pos[i] - last_encoder_pos[i] + 16383) < abs(diff)){
+      //diff += 16383;
+      overflow_correction[i] += 16383;
+    }
     //encoders[i] += diff;
-      if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] > 10000){
-        overflow_correction[i] += 16383;
-      }
-      if (encoders[i] - overflow_correction[i] - new_encoder_pos[i] < -10000){
-        overflow_correction[i] -= 16383;
-      }
+      // if (encoders[i] - overflow_correction[i] + encoder_zero[i] - new_encoder_pos[i] > 10000){
+      //   overflow_correction[i] += 16383;
+      // }
+      // if (encoders[i] - overflow_correction[i] + encoder_zero[i] - new_encoder_pos[i] < -10000){
+      //   overflow_correction[i] -= 16383;
+      // }
       encoders[i] = new_encoder_pos[i] + overflow_correction[i] - encoder_zero[i];
     } else {
       encoders[i] = abs(new_encoder_pos[i] % (136 * 2));
@@ -201,11 +202,11 @@ void move_to_end(uint16_t pid){
 void move_to(int32_t pos[6]){
   //reset_motors();
   loop_encoders();
-  int32_t last_encoders[6];
-  for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
+  //int32_t last_encoders[6];
+  //for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
   int moving = 4;
-  while (moving > 0){
-    moving = 4;
+  //while (moving > 0){
+   // moving = 4;
 
     for (int i = 0; i < 4; i++){
       // forwards
@@ -213,14 +214,14 @@ void move_to(int32_t pos[6]){
         ledcWrite(i+4, 0);
         //Serial.printf("%d forward", i);
         int new_speed = (1 + abs(pos[i] - encoders[i])) / 1;
-        ledcWrite(i, 0.1*PWM_MAX - ((1 / new_speed) * 0.1*PWM_MAX));
+        ledcWrite(i, 0.07*PWM_MAX - ((1 / new_speed) * 0.07*PWM_MAX));
         
         //ledcWrite(i, 0.1*PWM_MAX);
       } else if (pos[i] - encoders[i] < -100){
         ledcWrite(i, 0);
         //Serial.printf("%d bacjward", i);
         int new_speed = (1 + abs(pos[i] - encoders[i])) / 1;
-        ledcWrite(i + 4, 0.1*PWM_MAX - ((1 / new_speed) * 0.1*PWM_MAX));
+        ledcWrite(i + 4, 0.07*PWM_MAX - ((1 / new_speed) * 0.07*PWM_MAX));
         
         //ledcWrite(i + 4, 0.1*PWM_MAX);
       }
@@ -230,18 +231,30 @@ void move_to(int32_t pos[6]){
         ledcWrite(i + 4, 0);
         moving -= 1;
       }
-      loop_encoders();
+      //loop_encoders();
     }
-    delay(2);
+    delay(1);
+    // for (int i = 0; i < 4; i++){
+    //    ledcWrite(i, 0);
+    //    ledcWrite(i+4, 0);
+    // }
+    // delay(1);
 
-    for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
+    //for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
     loop_encoders();
     send_encoders();
-  }
+  //}
 }
 
 void move_in_sync(){
-  move_to
+  loop_encoders();
+  int32_t new_encoders[6];
+  for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
+  new_encoders[0] = encoders[3];
+  new_encoders[3] = encoders[0];
+  new_encoders[1] = encoders[2];
+  new_encoders[2] = encoders[1];
+  move_to(new_encoders);
 }
 
 void align_motors(){
@@ -294,14 +307,11 @@ void setup(){
   loop_encoders();
   setup_motors();
   reset_motors();
-  delay(100);
+  delay(5000);
   align_motors();
   
   loop_encoders();
-  int32_t new_encoders[6];
-  for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
-  new_encoders[0] += 1000;
-  move_to(new_encoders);
+  
 }
 
 void loop(){  
@@ -309,4 +319,5 @@ void loop(){
   //loop_motors();
   loop_encoders();
   send_encoders();
+  move_in_sync();
 }
