@@ -3,7 +3,6 @@
 #include <SPI.h>
 #include <vector>
 
-
 // encoder
 static const uint32_t c_hspiSsPin1 = 15;
 static const uint32_t c_hspiSsPin2 = 5;
@@ -110,26 +109,24 @@ void loop_encoders(){
   }
 
   for (int i = 0; i < 6; i++){
-    if (i == 1 || i == 2) { new_encoder_pos[i] = 16383 - new_encoder_pos[i];}
+    if (i == 1 || i == 2) { new_encoder_pos[i] = (uint16_t)(abs(16383 - (int32_t)new_encoder_pos[i]));}
 
     if (i < 4){
-    int32_t diff = new_encoder_pos[i] - last_encoder_pos[i];
-    if (abs(new_encoder_pos[i] - last_encoder_pos[i] - 16383) < abs(diff)){
-      //diff -= 16383;
-      overflow_correction[i] -= 16383;
-    } 
-    if (abs(new_encoder_pos[i] - last_encoder_pos[i] + 16383) < abs(diff)){
-      //diff += 16383;
-      overflow_correction[i] += 16383;
+    if (abs(last_encoder_pos[i] - new_encoder_pos[i]) > 15000){
+      if (new_encoder_pos[i] < last_encoder_pos[i]){
+        overflow_correction[i] += 16383;
+      }
+      if (new_encoder_pos[i] > last_encoder_pos[i]){
+        overflow_correction[i] -= 16383;
+      }
     }
-    //encoders[i] += diff;
-      // if (encoders[i] - overflow_correction[i] + encoder_zero[i] - new_encoder_pos[i] > 10000){
-      //   overflow_correction[i] += 16383;
-      // }
-      // if (encoders[i] - overflow_correction[i] + encoder_zero[i] - new_encoder_pos[i] < -10000){
-      //   overflow_correction[i] -= 16383;
-      // }
-      encoders[i] = new_encoder_pos[i] + overflow_correction[i] - encoder_zero[i];
+    encoders[i] = (int32_t)(new_encoder_pos[i]) + overflow_correction[i] - encoder_zero[i];
+    if (encoder_zero[i] != 0) {
+      if (encoders[i] > 6000){overflow_correction[i] -= 16383;}
+      if (encoders[i] < -5000){overflow_correction[i] += 16383;}
+    }
+    encoders[i] = (int32_t)(new_encoder_pos[i]) + overflow_correction[i] - encoder_zero[i];
+    
     } else {
       encoders[i] = abs(new_encoder_pos[i] % (136 * 2));
     }
@@ -143,7 +140,7 @@ void send_encoders(){
   // }
   // Serial.print(" -- ");
   for (int i = 0; i < 6; i++){
-    Serial.printf("%d,", encoders[i]);
+    Serial.printf("[%d, %d]", encoders[i], overflow_correction[i]);
   }
   Serial.println("");
 }
@@ -207,33 +204,31 @@ void move_to(int32_t pos[6]){
   int moving = 4;
   //while (moving > 0){
    // moving = 4;
+    int p = 500;
 
     for (int i = 0; i < 4; i++){
       // forwards
-      if (pos[i] - encoders[i] > 100){
+      if (pos[i] - encoders[i] > 10){
         ledcWrite(i+4, 0);
-        //Serial.printf("%d forward", i);
-        int new_speed = (1 + abs(pos[i] - encoders[i])) / 1;
-        ledcWrite(i, 0.07*PWM_MAX - ((1 / new_speed) * 0.07*PWM_MAX));
+        int new_speed = p / (p + abs(pos[i] - encoders[i]));
+        ledcWrite(i, 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX));
         
         //ledcWrite(i, 0.1*PWM_MAX);
-      } else if (pos[i] - encoders[i] < -100){
+      } else if (pos[i] - encoders[i] < -10){
         ledcWrite(i, 0);
-        //Serial.printf("%d bacjward", i);
-        int new_speed = (1 + abs(pos[i] - encoders[i])) / 1;
-        ledcWrite(i + 4, 0.07*PWM_MAX - ((1 / new_speed) * 0.07*PWM_MAX));
+        int new_speed = p / (p + abs(pos[i] - encoders[i]));
+        ledcWrite(i + 4, 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX));
         
         //ledcWrite(i + 4, 0.1*PWM_MAX);
       }
       else{
-        //Serial.printf("%d none", i);
         ledcWrite(i, 0);
         ledcWrite(i + 4, 0);
         moving -= 1;
       }
-      //loop_encoders();
+      loop_encoders();
     }
-    delay(1);
+    //delay(3);
     // for (int i = 0; i < 4; i++){
     //    ledcWrite(i, 0);
     //    ledcWrite(i+4, 0);
@@ -242,13 +237,13 @@ void move_to(int32_t pos[6]){
 
     //for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
     loop_encoders();
-    send_encoders();
+    //send_encoders();
   //}
 }
 
+int32_t new_encoders[6];
 void move_in_sync(){
   loop_encoders();
-  int32_t new_encoders[6];
   for (int i = 0; i < 6; i++){new_encoders[i] = encoders[i];}
   new_encoders[0] = encoders[3];
   new_encoders[3] = encoders[0];
@@ -277,28 +272,6 @@ void align_motors(){
   for (int i = 2; i < 4; i++){ encoder_zero[i] = encoders[i];}
   int correction[4] = {3700, -4000, -4000, 3700};
   for (int i = 0; i < 4; i++){ encoder_zero[i] -= correction[i];}
-
-
-  // while ((encoders[0] - encoder_zero[0]) > -3700){
-  //   ledcWrite(4, 0.4*PWM_MAX);
-  //   delay(5);
-  //   ledcWrite(4, 0);
-  //   delay(25);
-  //   loop_encoders();
-  // }
-
-  // while ((encoders[2] - encoder_zero[2]) > -3700){
-  //   ledcWrite(7, 0.4*PWM_MAX);
-  //   delay(5);
-  //   ledcWrite(7, 0);
-  //   delay(25);
-  //   loop_encoders();
-  // }
-  //for (int i = 0; i < 4; i++){ encoder_zero[i] = encoders[i];}
-}
-
-void loop_motors(){
-  
 }
 
 void setup(){
@@ -309,13 +282,11 @@ void setup(){
   reset_motors();
   delay(5000);
   align_motors();
-  
   loop_encoders();
-  
 }
 
 void loop(){  
-  delay(10);
+  //delay(2);
   //loop_motors();
   loop_encoders();
   send_encoders();
