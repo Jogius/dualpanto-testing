@@ -196,37 +196,42 @@ void move_to_end(uint16_t pid){
   }
 }
 
+int16_t integral[4] = {0, 0, 0, 0};
 void move_to(int32_t pos[6]){
   //reset_motors();
   loop_encoders();
   //int32_t last_encoders[6];
   //for (int i = 0; i < 6; i++){last_encoders[i] = encoders[i];}
-  int moving = 4;
+  //int moving = 4;
   //while (moving > 0){
    // moving = 4;
-    int p = 500;
+    int p = 1000;
 
     for (int i = 0; i < 4; i++){
+      int new_speed = p / (p + abs(pos[i] - encoders[i]));
+      integral[i] += pos[i] - encoders[i];
+      float pwm_speed = 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX);
       // forwards
-      if (pos[i] - encoders[i] > 10){
+      if (pos[i] - encoders[i] > 3){
+        if (integral[i] < 0) {integral[i] = 0;}
         ledcWrite(i+4, 0);
-        int new_speed = p / (p + abs(pos[i] - encoders[i]));
-        ledcWrite(i, 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX));
+        ledcWrite(i, pwm_speed); //+ 0.05 * (1 - 1 / integral[i]));
         
         //ledcWrite(i, 0.1*PWM_MAX);
-      } else if (pos[i] - encoders[i] < -10){
+      } else if (pos[i] - encoders[i] < -3){
+        if (integral[i] > 0) {integral[i] = 0;}
         ledcWrite(i, 0);
-        int new_speed = p / (p + abs(pos[i] - encoders[i]));
-        ledcWrite(i + 4, 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX));
+        ledcWrite(i + 4, pwm_speed );//+ 0.05 * (1 - 1 / abs(integral[i])));
         
         //ledcWrite(i + 4, 0.1*PWM_MAX);
       }
       else{
+        integral[i] = 0;
         ledcWrite(i, 0);
         ledcWrite(i + 4, 0);
-        moving -= 1;
+        //moving -= 1;
       }
-      loop_encoders();
+      //loop_encoders();
     }
     //delay(3);
     // for (int i = 0; i < 4; i++){
@@ -288,7 +293,10 @@ void setup(){
 void loop(){  
   //delay(2);
   //loop_motors();
-  loop_encoders();
+  for (int i = 0; i < 1000; i++){
+    loop_encoders();
+    
+    move_in_sync();
+  }
   send_encoders();
-  move_in_sync();
 }
