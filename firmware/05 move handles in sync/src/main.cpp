@@ -196,6 +196,10 @@ void move_to_end(uint16_t pid){
   }
 }
 
+float pwm_speed(int n, int32_t target, int32_t current){
+  
+}
+
 int16_t integral[4] = {0, 0, 0, 0};
 void move_to(int32_t pos[6]){
   //reset_motors();
