@@ -196,11 +196,31 @@ void move_to_end(uint16_t pid){
   }
 }
 
-float pwm_speed(int n, int32_t target, int32_t current){
-  
+int32_t integral[4] = {0, 0, 0, 0};
+float prev_time[4] = {-1.0, -1.0, -1.0, -1.0};
+int32_t prev_error[4] = {0,0,0,0};
+float pid_value(int n, int32_t target, int32_t current){
+  int32_t error = abs(target - current);
+  if (prev_time[n] < 0){
+    prev_time[n] = micros();
+  }
+  float dt = micros() - prev_time[n];
+  prev_time[n] = micros();
+  //no integral component in panto implementation
+  //integral[n] = min(0.5f, integral[n] + error * dt);
+
+  float derivative = max(0.0f, ((float)(error - prev_error[n])) / dt);
+  prev_error[n] = error;
+
+
+  // 6.0 and 600 - panto constants for 2pi
+  // 0.0023001 and 0.23001
+  return 0.0023001f * error + 0.23001f * derivative;
+  //Serial.printf("%f\n", 6.0f * error + 600.0f * derivative);
+  //return 6.0f * error + 600.0f * derivative;
 }
 
-int16_t integral[4] = {0, 0, 0, 0};
+
 void move_to(int32_t pos[6]){
   //reset_motors();
   loop_encoders();
@@ -209,28 +229,28 @@ void move_to(int32_t pos[6]){
   //int moving = 4;
   //while (moving > 0){
    // moving = 4;
-    int p = 1000;
+    //int p = 1000;
 
     for (int i = 0; i < 4; i++){
-      int new_speed = p / (p + abs(pos[i] - encoders[i]));
-      integral[i] += pos[i] - encoders[i];
-      float pwm_speed = 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX);
+      // int new_speed = p / (p + abs(pos[i] - encoders[i]));
+      // integral[i] += pos[i] - encoders[i];
+      // float pwm_speed = 0.07*PWM_MAX - (new_speed * 0.07*PWM_MAX);
       // forwards
-      if (pos[i] - encoders[i] > 3){
-        if (integral[i] < 0) {integral[i] = 0;}
+
+      float speed = 0.2 * min(1.0f, pid_value(i, pos[i], encoders[i]))*PWM_MAX;
+      
+      if (pos[i] - encoders[i] > 0){
         ledcWrite(i+4, 0);
-        ledcWrite(i, pwm_speed); //+ 0.05 * (1 - 1 / integral[i]));
+        ledcWrite(i, speed); //+ 0.05 * (1 - 1 / integral[i]));
         
         //ledcWrite(i, 0.1*PWM_MAX);
-      } else if (pos[i] - encoders[i] < -3){
-        if (integral[i] > 0) {integral[i] = 0;}
+      } else if (pos[i] - encoders[i] < 0){
         ledcWrite(i, 0);
-        ledcWrite(i + 4, pwm_speed );//+ 0.05 * (1 - 1 / abs(integral[i])));
+        ledcWrite(i + 4, speed);//+ 0.05 * (1 - 1 / abs(integral[i])));
         
         //ledcWrite(i + 4, 0.1*PWM_MAX);
       }
       else{
-        integral[i] = 0;
         ledcWrite(i, 0);
         ledcWrite(i + 4, 0);
         //moving -= 1;
