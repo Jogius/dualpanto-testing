@@ -1,6 +1,7 @@
 import dataclasses
 import logging
 import time
+import config
 from enum import Enum
 
 import binascii
@@ -121,8 +122,8 @@ class PantoProtocol:
                     bad_sequence_idx += 1
                 else:
                     bad_sequence_idx = 0
-
-                logging.info("Received byte: %s", _byte)
+                if config.developer:
+                    logging.info("Received byte: %s", _byte)
 
                 if good_sequence_idx == len(good_sequence):
                     logging.info("Seeking found good sequence... consuming message than switching to protocol")

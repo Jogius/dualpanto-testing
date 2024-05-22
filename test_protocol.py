@@ -4,10 +4,12 @@ import unittest
 import math
 from parameterized import parameterized
 
-import util
+from utils import util
 import serial
 
-from panto_protocol import PantoProtocol, PositionData
+import config
+
+from utils.panto_protocol import PantoProtocol, PositionData
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -126,8 +128,9 @@ class BaseProtocolTest(unittest.TestCase):
     con = None
 
     def setUp(self):
-        util.upload_firmware("firmware/10 panto firmware/firmware", False)
-        com = "/dev/cu.usbserial-0001"
+        if config.uploading_firmware:
+            util.upload_firmware("firmware/10 panto firmware/firmware", False)
+        com = config.COM_PORT
         self.con = serial.Serial(com, baudrate=115200, timeout=5)
 
     def tearDown(self):
@@ -136,7 +139,7 @@ class BaseProtocolTest(unittest.TestCase):
 
 class TestPantoProtocol(BaseProtocolTest):
     def test_timeout_1min(self):
-        pp = StrictPantoProtocol(self.con, timeout=60)
+        pp = StrictPantoProtocol(self.con, timeout=10)
         pp.run()
 
     def test_message_count(self):
