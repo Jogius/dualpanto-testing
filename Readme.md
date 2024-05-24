@@ -8,7 +8,7 @@ Goal of this repository is to provide some (semi) automatic testing for the dual
 - Run the installer.
 
 ### Install IDE
-We recommend to use PyCharm to run the test flow.
+We highly recommend to use PyCharm to run this test flow.
 #### PyCharm
 1. download [PyCharm](https://www.jetbrains.com/community/education/#students)
 2. clone this repo and open it with pycharm
@@ -32,31 +32,27 @@ you can run  unittest from Markdown preview (or [execute unittest from scripts](
 you can also run all unittest from command line interface if you want.
 
 # Test Flow
-If you don't have any intuition about where the trouble that you have comes from,
+If you don't have any intuition about where the issue that you have comes from,
 you want to test from bottom up: mechanical -> hardware ->  framework -> communication ->unity. 
 
-Some of the test is not software automatable, since they are related to haptics and mechanics. check `How to test?` link.
+Some of the test is not software automatable since they are related to haptics and mechanics. check `How to test?`.
+
 
 ## Configurate test flow
-1. go `config.py` and enter your EPS port.
-2. check flag
-3. when you upload a firmware, you need to push button back of dualpanto. please check [here](![pycharm_unittest](resources/images/pycharm_unittest_1.jpg)
-).
+1. open `config.py` and enter your ESP port.
+2. when you upload a firmware, you need to push button back of dualpanto. please check [this](https://github.com/HassoPlattnerInstituteHCI/dualpanto/blob/main/BIS.md#upload-firmware)
+.
 
-
-
-
+   
 ## 1. Mechanical and Hardware
 test with  IDE or from command line
+
 0. [check mechanical configuration](CheckLists/mechanical.md)
 1. `python -m unittest test_firmware.Basic`
 2. `python -m unittest test_hardware.Linkage.test_encoder`[How to test?]()
 3. `python -m unittest test_hardware.Linkage.test_sync`[How to test?]()
-4. `python -m unittest test_hardware.EndEffector.test_encoder`[How to test?]()
-5. `python -m unittest test_hardware.EndEffector.test_motor`[How to test?]()
-
-check platformIO
-
+4. `python -m unittest test_hardware.EndEffector.test_encoder` **WIP**
+5. `python -m unittest test_hardware.EndEffector.test_motor` **WIP**
 
 ```mermaid
 %%{init: {'theme': 'neutral' } }%%
@@ -101,24 +97,28 @@ flowchart TD;
 **WIP**
 
 test with  IDE or from command line
+
 0. [check mechanical configuration](CheckLists/mechanical.md)
-1. `python -m unittest test_firmware.Upload.test_upload_dp`
-2. 
+1. `python -m unittest test_firmware.Haptics.test_line_wall` [How to test?]()
+2. `python -m unittest test_firmware.Haptics.test_force_field` **WIP**
+3. `python -m unittest test_firmware.Haptics.test_rail` **WIP**
+4. `python -m unittest test_firmware.Haptics.test_rectangle_obstacle` **WIP**
+5. `python -m unittest test_firmware.Haptics.test_diamond_obstacle` **WIP**
+6. `python -m unittest test_firmware.Haptics.test_moving_obstacle` **WIP**
+7. `python -m unittest test_firmware.Kinematics.test_forward` **WIP**
+8. `python -m unittest test_firmware.Kinematics.test_inverse` **WIP**
+
 ```mermaid
 %%{init: {'theme': 'neutral' } }%%
 flowchart TD;
     ST((start)) --> MC[mechanical];
-    MC -- checked --> TUDP;
-    
-    subgraph test_firmware.Upload
-    TUDP[test_upload_dp] --not work--> TA0((Ask TA))
-    end
-    
-    TUDP -- work -->TLW;
+    MC -- checked --> TLW;
     
     subgraph test_firmware.Haptics
-    TLW[test_line_wall] --> TFF[test_force_field]
-    TFF --> DONE((done))
+    TLW[1.test_line_wall] --> TFF[2.test_force_field]
+    TLW --not work--> TA0((Ask TA))
+    TFF --> TR[3.test_rail]
+    TR --> DONE((done))
     
 %%    TR[test_rail]
 %%    
@@ -137,7 +137,11 @@ flowchart TD;
 ```
 
 ## 3. Communication between DualPanto and PC
+
+**WIP**
+
 test with  IDE or from command line
+
 1. `python -m unittest test_hardware.HardwareTest.test_compile_firmware` [How to test?]()
 
 ```mermaid
@@ -161,8 +165,10 @@ On a firmware level we need to test that the dualpanto can
 - render obstacles
 
 ## 4. Unity (Communication between DualPanto and Unity)
-
 TODO
 
 ## Development
-This project is currenty under developement. For questions, please reach out to martin.taraz@hpi.de
+This project is currenty under developement. 
+For questions, please reach out to martin.taraz@hpi.de, shohei.katakura@hpi.de
+
+For BIS students, please reach out shohei.katakura@hpi.de
