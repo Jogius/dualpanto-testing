@@ -9,5 +9,5 @@ COM_PORT = "/dev/tty.SLAB_USBtoUART"
 # COM_PORT = "/dev/ttyUSB0"
 
 ### Flag
-uploading_firmware = False
+uploading_firmware = True
 developer = False
