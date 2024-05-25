@@ -129,7 +129,7 @@ class BaseProtocolTest(unittest.TestCase):
 
     def setUp(self):
         if config.uploading_firmware:
-            util.upload_firmware("firmware/10 panto firmware/firmware", False)
+            util.upload_firmware("firmware/dualpantoframework/firmware", False)
         com = config.COM_PORT
         self.con = serial.Serial(com, baudrate=115200, timeout=5)
 

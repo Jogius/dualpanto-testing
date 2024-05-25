@@ -13,7 +13,7 @@ class Linkage(unittest.TestCase):
     encoder_pos = [0, 0, 0, 0]
     continue_serial_connection_flag = True
     def test_encoder(self):
-        res = util.upload_firmware('./firmware/04 encoder read')
+        res = util.upload_firmware('./firmware/hardware/linkage encoder')
         self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
         # move serial connection handling to other thread
@@ -163,7 +163,7 @@ class EndEffector(unittest.TestCase):
 
     def handle_serial_connection(self):
         print("Connecting...")
-        with serial.Serial(config.COM_PORT, 9600, timeout=1, parity=serial.PARITY_EVEN) as ser:
+        with serial.Serial(config.COM_PORT, 115200, timeout=1, parity=serial.PARITY_EVEN) as ser:
             time.sleep(1)
             self.assertNotEqual(ser.inWaiting(), 0, msg="could not establish serial connection... try restarting the panto")
             uint_overflow_correction = [0,0,0,0]

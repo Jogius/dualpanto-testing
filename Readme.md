@@ -1,6 +1,11 @@
 # Dualpanto Testing
 
-Goal of this repository is to provide some (semi) automatic testing for the dualpanto platform. This involves basic functionality checks of the hardware, the firmware and potentially the unity integration
+The goal of this repository is to provide (semi) automatic testing for the dualpanto platform. This involves basic functionality checks of the hardware, the haptic rendering and the unity integration.
+
+This project is work-in-progress. Welcome you to contribute.
+### For BIS participants
+Please check [BIS.md](BIS/BIS.md) first.
+
 
 ## Requirements
 ### Install the ESP32 driver
@@ -18,8 +23,6 @@ We highly recommend to use PyCharm to run this test flow.
 
 you can run  unittest from Markdown preview (or [execute unittest from scripts](https://www.jetbrains.com/help/pycharm/testing-your-first-python-application.html#create-test))
 
-[//]: # (![pycharm_unittest]&#40;resources/images/pycharm_unittest_1.jpg&#41;)
-
 
 
 #### VScode
@@ -32,22 +35,18 @@ you can run  unittest from Markdown preview (or [execute unittest from scripts](
 you can also run all unittest from command line interface if you want.
 
 # Test Flow
-If you don't have any intuition about where the issue that you have comes from,
-you want to test from bottom up: mechanical -> hardware ->  framework -> communication ->unity. 
-
-Some of the test is not software automatable since they are related to haptics and mechanics. check `How to test?`.
+Most of the test is not semi-automated since they are related to haptics and mechanical issue. Check `How to test?`.
 
 
 ## Configurate test flow
-1. open `config.py` and enter your ESP port.
-2. when you upload a firmware, you need to push button back of dualpanto. please check [this](https://github.com/HassoPlattnerInstituteHCI/dualpanto/blob/main/BIS.md#upload-firmware)
-.
 
+1. open `config.py` and enter your ESP port.
+2. when you upload a firmware, you probably need to push button back of dualpanto (it depends on OS).
+![swith](./resources/dualpanto_switch.jpg)
    
 ## 1. Mechanical and Hardware
-test with  IDE or from command line
 
-0. [check mechanical configuration](CheckLists/mechanical.md)
+0.  [check mechanical configuration](physical_test%2Fmechanical_issue_check_list.md)
 1. `python -m unittest test_firmware.Basic`
 2. `python -m unittest test_hardware.Linkage.test_encoder`[How to test?]()
 3. `python -m unittest test_hardware.Linkage.test_sync`[How to test?]()
@@ -62,7 +61,8 @@ flowchart TD;
     
     subgraph  test_firmware
     FB[1.Basic];
-    FB -- not work --> TA0((Ask TA))
+    FB -- not work --> CH(check USB connection, <br> COM port and <br> platformIO  properly installed)
+    CH -- no idea --> TA0((Ask TA))
     end
     
     FB -- work -->  LTE[2.test_Encoder]
@@ -93,12 +93,9 @@ flowchart TD;
     click MC "https://discord.com"
 ```
 
-## 2. Firmware
-**WIP**
+## 2. Rendering Haptics = DualPanto Firmware
 
-test with  IDE or from command line
-
-0. [check mechanical configuration](CheckLists/mechanical.md)
+0. [check mechanical configuration](physical_test/mechanical.md)
 1. `python -m unittest test_firmware.Haptics.test_line_wall` [How to test?]()
 2. `python -m unittest test_firmware.Haptics.test_force_field` **WIP**
 3. `python -m unittest test_firmware.Haptics.test_rail` **WIP**
@@ -107,65 +104,16 @@ test with  IDE or from command line
 6. `python -m unittest test_firmware.Haptics.test_moving_obstacle` **WIP**
 7. `python -m unittest test_firmware.Kinematics.test_forward` **WIP**
 8. `python -m unittest test_firmware.Kinematics.test_inverse` **WIP**
+9.  (WIP: mathing it and me's rocation for each dualpanto) 
 
-```mermaid
-%%{init: {'theme': 'neutral' } }%%
-flowchart TD;
-    ST((start)) --> MC[mechanical];
-    MC -- checked --> TLW;
-    
-    subgraph test_firmware.Haptics
-    TLW[1.test_line_wall] --> TFF[2.test_force_field]
-    TLW --not work--> TA0((Ask TA))
-    TFF --> TR[3.test_rail]
-    TR --> DONE((done))
-    
-%%    TR[test_rail]
-%%    
-%%    TRW[test_rectangle_obstacle]
-%%    
-%%    TMW[test_moving_obstacle]
-    
-    
-    end
-    
-    
-    
-    style TA0 fill:#FF9B00
-    style DONE fill:#99CC00
-
-```
 
 ## 3. Communication between DualPanto and PC
 
 **WIP**
 
-test with  IDE or from command line
-
-1. `python -m unittest test_hardware.HardwareTest.test_compile_firmware` [How to test?]()
-
-```mermaid
-%%{init: {'theme': 'neutral' } }%%
-flowchart TD;
-    ST((start)) --> MC[mechanical];
-    
-    subgraph test_protocol
-    MC[test_message_count]-- work -->SGO[test_set_god_object];
-    end
-```
-
-Please clone the current panto firmware into `firmware/10 panto firmware` and run `npm run script config`
-
-On a firmware level we need to test that the dualpanto can
-- perform the handshake
-- keep the connection alive
-- move the handles if instructed
-- report the handle position
-- accept obstacles
-- render obstacles
-
 ## 4. Unity (Communication between DualPanto and Unity)
-TODO
+
+**WIP**
 
 ## Development
 This project is currenty under developement. 

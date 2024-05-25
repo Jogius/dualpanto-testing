@@ -3,3 +3,5 @@ unittest
 platformio
 parameterized
 html-testRunner
+
+matplotlib
