@@ -4,13 +4,24 @@ The goal of this repository is to provide semi-automatic testing for the dualpan
 
 This project is work-in-progress. Welcome to contribute.
 ### For BIS participants
-Please check [BIS.md](BIS/BIS.md) first.
+Please check [BIS.md](BIS.md) first.
 
 
 ## Requirements
 ### Install the ESP32 driver
 - [Download](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads) the latest installer for your OS-Version.
 - Run the installer.
+
+### Setup C++ environment
+
+#### macOS
+ - Go to Appstore and install Xcode
+ - Run `xcode-select –install` to install the compilers
+ - Run `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
+
+#### windows
+ - Install Visual Studio 2019 or 2017
+ - Select at least the workload “Desktopentwicklung mit C++”
 
 ### Install IDE
 We highly recommend to use PyCharm to run this test flow.
@@ -32,7 +43,7 @@ or [execute unittest from scripts](https://www.jetbrains.com/help/pycharm/testin
 4. follow Test Flow section ([Test flow in VSCode](https://code.visualstudio.com/docs/python/testing))
 
 #### Command Line
-you can also run all unittest from command line interface if struggle with setting up IDE.
+you can also run all unittest from command line interface if struggle with setting up IDE. Install python library in requirements.txt, then execute script.
 
 # Test Flow
 Most of the test is not semi-automated since they are related to haptics and mechanical issue. Check `How to test?`.
@@ -119,11 +130,11 @@ flowchart TD;
 - *2.Kinematics.test_kiematics_sync* check forward and inverse kinematics of dualpanto firmware works fine or not
 
 
-## 3. Communication between DualPanto and PC
+## 3. Communication Protocol
 
 **WIP**
 
-## 4. Unity (Communication between DualPanto and Unity)
+## 4. Unity
 
 **WIP**
 

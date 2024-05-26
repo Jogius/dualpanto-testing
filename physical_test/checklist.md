@@ -4,6 +4,7 @@ First things you needs to check is mechanical issue
 
 ### Basic
 - check dualpanto is connected to PC via microUSB
+- try different PC
 
 ### Mechanical configuration
 - check motor solder connection
