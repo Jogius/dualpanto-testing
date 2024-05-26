@@ -4,15 +4,35 @@ We use this dualpanto-testing repo for assignment, and uploading dualpanto firmw
 
 **Please check and install all requirements at [Readme.md](../Readme.md)**
 
+If you have issue about installing all requirements and this testing tool, **please first ask on discord #general channel.**
+Often other students have already solved issue you have. (with 60 students in 2024, there's a good chance they have solved it)
 
-## Assignment Week7: rendering wall
-Assignment for Week7 is to write code of god objeect partially, and get familiar with uploading firmware and this testing work flow.
+
+
+## Assignment Week7: kinematics and rendering wall
+Assignment for Week7 is to write code of god object and kinematics partially, and (mainly) get familiar with uploading firmware and this testing work flow since we use the test flow a lot from this week.
+
+We have two coding assignment this week:
+### #1 kinematics
+
 
 1. make sure install ESP32 driver, IDE, and all python library on requirements.txt
-2. go to `dualpant-testing/firmware/haptics/BIS week7/src`,find TODO and write code
-3. `python -m unittest test_firmware.Haptics.test_BIS_week7`
+2. go to `dualpant-testing/firmware/haptics/BIS week7 Kinematics/firmware/src/hardware/panto.cpp`,find `TODO BIS` and write code
+3. `python -m unittest test_firmware.Haptics.test_BIS_week7_kinematics`
+4. if you feel the device has issue, follow [test flow (Mechanics and Hardware)](../Readme.md)
+5. take the video that linkage is synced when you intearct with ME handle.
+6. and upload to dokuwiki project page
+
+### #2 rendering wall
+TODO: Given a position of god-object and the position of the handle, calculate rendering force.
+
+1. make sure install ESP32 driver, IDE, and all python library on requirements.txt
+2. go to `dualpant-testing/firmware/haptics/BIS week7 God Object/firmware/src/physics/godObject.cpp`,find `TODO BIS` and write code
+3. `python -m unittest test_firmware.Haptics.test_BIS_week7_go`
 4. if you feel the device has issue, follow [test flow (Mechanics and Hardware)](../Readme.md)
 5. take the video that you interacts with rendered wall
+6. and upload to dokuwiki project page
+
 
 ## Assignment Week8: 
 **WIP**

@@ -187,7 +187,7 @@ bool GodObject::move(bool isTweening, bool isFrozen)
 
 Vector2D GodObject::getCollisionForce(Vector2D godObjectPosition, Vector2D handlePosition){
 
-    // TODO:
+    // TODO BIS:
     // Given a position of god-object and the position of the handle,
     // calculate rendering force.
 
@@ -209,7 +209,8 @@ Vector2D GodObject::getCollisionForce(Vector2D godObjectPosition, Vector2D handl
 }
 
 Vector2D GodObject::getTetherForce(Vector2D error){
-    auto force = 0
+    auto force = error * forcePidFactor[0][0] + (error - m_lastErrorTether) * forcePidFactor[0][2];
+    m_lastErrorTether = error;
     return force;
 }
 

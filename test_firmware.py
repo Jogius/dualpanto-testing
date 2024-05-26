@@ -58,12 +58,12 @@ class Haptics(unittest.TestCase):
         print("")
         self.assertEqual(res, 0, msg='failed to upload firmware. please first check platformIO config and installation')
 
-    def test_BIS_week7(self):
-        res = util.upload_firmware("firmware/haptics/BIS week7/firmware", False)
+    def test_BIS_week7_go(self):
+        res = util.upload_firmware("firmware/haptics/BIS week7 God Object/firmware", False)
         print("")
-        print("=========================")
-        print("======= BIS WEEK7 =======")
-        print("=========================")
+        print("====================================")
+        print("======= BIS WEEK7 GOD OBJECT =======")
+        print("====================================")
         print("")
 
         print("This test requires you to interact with dualpanto device and test it physically using test paper-jig.")
@@ -71,20 +71,36 @@ class Haptics(unittest.TestCase):
         print("When you tested, please press Enter key.")
 
         print("")
-        print("=========================")
-        print("======= BIS WEEK7 =======")
-        print("=========================")
+        print("====================================")
+        print("======= BIS WEEK7 GOD OBJECT =======")
+        print("====================================")
         print("")
         self.assertEqual(res, 0, msg='failed to upload firmware. please first check platformIO config and installation')
 
 
 
 class Kinematics(unittest.TestCase):
-    def test_forward(self):
+    def test_kinematics_sync(self):
         self.assertIn(config.COM_PORT, util.serial_ports())
 
-    def test_inverse(self):
-        self.assertIn(config.COM_PORT, util.serial_ports())
+
+    def test_BIS_week7_kinematics(self):
+        res = util.upload_firmware("firmware/haptics/BIS week7 Kinematics/firmware", False)
+        print("")
+        print("====================================")
+        print("======= BIS WEEK7 KINEMATICS =======")
+        print("====================================")
+        print("")
+
+        print("This test requires you to interact with dualpanto device and test it physically")
+        print("Please check./BIS/BIS.md")
+
+        print("")
+        print("====================================")
+        print("======= BIS WEEK7 KINEMATICS =======")
+        print("====================================")
+        print("")
+        self.assertEqual(res, 0, msg='failed to upload firmware. please first check platformIO config and installation')
 
 
 class UploadDualPantoFramework(unittest.TestCase):

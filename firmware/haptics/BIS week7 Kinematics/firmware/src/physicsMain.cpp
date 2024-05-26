@@ -19,13 +19,13 @@ void physicsSetup()
     #ifdef LINKAGE_ENCODER_USE_SPI
     spi = new SPIEncoderChain(numberOfSpiEncoders);
     #endif
-    
+
     for (auto i = 0; i < pantoCount; ++i)
     {
         pantos.emplace_back(i);
     }
     delay(1000);
-    
+
     xTaskNotifyGive(Tasks.at("I/O").getHandle());
 
     #ifdef LINKAGE_ENCODER_USE_SPI
@@ -34,7 +34,7 @@ void physicsSetup()
 
     EEPROM.begin(sizeof(uint32_t)*numberOfSpiEncoders);
 
-    //calibrateEncoders; Comment if not needed 
+    //calibrateEncoders; Comment if not needed
     // for (auto i = 0; i < pantoCount; ++i)
     // { pantos[i].calibrateEncoders(i);}
 
@@ -60,27 +60,42 @@ void physicsSetup()
     #ifdef LINKAGE_ENCODER_USE_SPI
     spi->setPosition(startPositions);
     #endif
-    
+
     for (unsigned char i = 0; i < pantoCount; ++i)
     {
         pantoPhysics.emplace_back(&pantos[i]);
     }
+
+    pantos[1].setSpeed(500.0f);
+
+
 }
 
-void physicsLoop()
-{
+void physicsLoop() {
     PERFMON_START("[a] Read encoders");
     // PERFMON_START("[aa] Query SPI");
-    #ifdef LINKAGE_ENCODER_USE_SPI
+#ifdef LINKAGE_ENCODER_USE_SPI
     spi->update();
-    #endif
+#endif
     // PERFMON_STOP("[aa] Query SPI");
 
-    // PERFMON_START("[ab] Calculation loop");
-    for (auto i = 0; i < pantoCount; ++i)
+
+    auto target = pantos[0].getPosition();
+
+    if (!isnan(target.x) && !isnan(target.y))
     {
+        pantos[1].setInTransition(true);
+    }
+
+    pantos[1].setTarget(target,false);
+    pantos[1].forwardKinematics();
+//    pantos[0].actuateMotors();
+
+    // PERFMON_START("[ab] Calculation loop");
+    for (auto i = 0; i < pantoCount; ++i) {
         // PERFMON_START("[aba] Actually read");
         pantos[i].readEncoders();
+
         // PERFMON_STOP("[aba] Actually read");
         PERFMON_START("[abb] Calc fwd kinematics");
         pantos[i].forwardKinematics();
@@ -90,20 +105,18 @@ void physicsLoop()
     PERFMON_STOP("[a] Read encoders");
 
     PERFMON_START("[b] Calculate physics");
-    for (auto i = 0; i < pantoCount; ++i)
-    {
+    for (auto i = 0; i < pantoCount; ++i) {
         pantoPhysics[i].step();
     }
     PERFMON_STOP("[b] Calculate physics");
 
     PERFMON_START("[c] Actuate motors");
-    for (auto i = 0; i < pantoCount; ++i)
-    {
+    for (auto i = 0; i < pantoCount; ++i) {
         pantos[i].actuateMotors();
     }
     PERFMON_STOP("[c] Actuate motors");
 
-    if(spiErrorLimiter.step()) {
+    if (spiErrorLimiter.step()) {
         // DPSerial::sendQueuedDebugLog("SPI Errors: %i out of %i requests", spi->getErrors(), spi->getRequests());
         // for(int i=0; i < 2; i++){
         // DPSerial::sendQueuedDebugLog("Encoder Errors panto[0][%i]: %i out of %i requests",i,
@@ -115,39 +128,41 @@ void physicsLoop()
         // }
         // spi->resetErrors();
     }
-  
+
     PERFMON_START("[d] Calibrate Pantos");
     bool flag = false;
-    for(auto i = 0; i < pantoCount; ++i){
-        if(pantos[i].getCalibrationState()){
+    for (auto i = 0; i < pantoCount; ++i) {
+        if (pantos[i].getCalibrationState()) {
             flag = true;
             break;
         }
     }
-    if(flag){
-        #ifdef LINKAGE_ENCODER_USE_SPI
+    if (flag) {
+#ifdef LINKAGE_ENCODER_USE_SPI
         std::vector<uint16_t> startPositions(numberOfSpiEncoders);
-        #endif
-        for (auto i = 0; i < pantoCount; ++i)
-        {
+#endif
+        for (auto i = 0; i < pantoCount; ++i) {
             pantos[i].calibrationEnd();
-            #ifdef LINKAGE_ENCODER_USE_SPI
+#ifdef LINKAGE_ENCODER_USE_SPI
             for (auto j = 0; j < 3; ++j) // three encoders
             {
                 auto index = encoderSpiIndex[i * 3 + j];
-                if(index != 0xffffffff) // excluding it / me handle.
+                if (index != 0xffffffff) // excluding it / me handle.
                 {
                     startPositions[index] =
-                        ((uint16_t)(pantos[i].getActuationAngle(j) /
-                        (TWO_PI) *
-                        encoderSteps[i * 3 + j]) & 0x3fff);
+                            ((uint16_t) (pantos[i].getActuationAngle(j) /
+                                         (TWO_PI) *
+                                         encoderSteps[i * 3 + j]) & 0x3fff);
                 }
             }
-            #endif
+#endif
         }
-        #ifdef LINKAGE_ENCODER_USE_SPI
+#ifdef LINKAGE_ENCODER_USE_SPI
         spi->setPosition(startPositions);
-        #endif
+#endif
     }
     PERFMON_STOP("[d] Calibrate Pantos");
+
+
+
 }

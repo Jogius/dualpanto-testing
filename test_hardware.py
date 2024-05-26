@@ -151,7 +151,7 @@ class EndEffector(unittest.TestCase):
         input()
 
     def test_sync(self):
-        res = util.upload_firmware('./firmware/05 move handles in sync')
+        res = util.upload_firmware('./firmware/hardware/linkage sync')
         self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
         # with serial.Serial(config.COM_PORT, 9600, timeout=1) as ser:
