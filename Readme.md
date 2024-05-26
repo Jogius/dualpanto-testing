@@ -37,7 +37,7 @@ you can also run all unittest from command line interface if struggle with setti
 # Test Flow
 Most of the test is not semi-automated since they are related to haptics and mechanical issue. Check `How to test?`.
 
-**When you need to ask question on discord, please tell us which test you failed first, and describe error or issue you have precise as possible.**
+**When you need to ask question on discord, please tell us which test you failed, and describe error or issue you have precise as possible.**
 
 
 ## Configurate test flow
@@ -48,7 +48,7 @@ Most of the test is not semi-automated since they are related to haptics and mec
    
 ## 1. Mechanical and Hardware
 
-0.  [check mechanical configuration](physical_test%2Fmechanical_issue_check_list.md)
+0.  [check mechanical configuration](physical_test/checklist.md)
 1. `python -m unittest test_firmware.Basic`
 2. `python -m unittest test_hardware.Linkage.test_encoder`[How to test?]()
 3. `python -m unittest test_hardware.Linkage.test_sync`[How to test?]()
@@ -106,7 +106,7 @@ flowchart TD;
 
 ## 2. Rendering Haptics = DualPanto Firmware
 
-0. [check mechanical configuration](physical_test/mechanical.md)
+0. [check mechanical configuration](physical_test/checklist.md)
 1. `python -m unittest test_firmware.Haptics.test_line_wall` [How to test?]()
 2. `python -m unittest test_firmware.Kinematics.test_kinematics_sync` **WIP**
 3. `python -m unittest test_firmware.Haptics.test_force_field` **WIP**
