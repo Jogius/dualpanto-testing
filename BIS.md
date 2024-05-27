@@ -52,6 +52,7 @@ Assignment for Week7 is to write code of god object and kinematics partially, an
 
 We have two coding assignment this week:
 ### #1 kinematics
+If you properly code it, IT handle follow Me handle
 
 1. make sure install ESP32 driver, IDE, and all python library on requirements.txt
 2. go to `dualpant-testing/firmware/haptics/BIS week7 Kinematics/firmware/src/hardware/panto.cpp`,find `TODO BIS` and write code
@@ -61,7 +62,7 @@ We have two coding assignment this week:
 6. and upload to dokuwiki project page
 
 ### #2 rendering wall
-TODO: Given a position of god-object and the position of the handle, calculate rendering force.
+If you properly code it, you will find a thin wall in the midle of dualpanto intearcitve region.
 
 1. make sure install ESP32 driver, IDE, and all python library on requirements.txt
 2. go to `dualpant-testing/firmware/haptics/BIS week7 God Object/firmware/src/physics/godObject.cpp`,find `TODO BIS` and write code
