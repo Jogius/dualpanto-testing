@@ -50,6 +50,9 @@ you can also run all unittest from command line interface if struggle with setti
 ## Assignment Week7: kinematics and rendering wall
 Assignment for Week7 is to write code of god object and kinematics partially, and (mainly) get familiar with uploading firmware and this testing work flow since we use the test flow a lot from this week.
 
+### #0 set com port
+Open `config.py` and enter your COM port to connect dualpanto.
+
 We have two coding assignment this week:
 ### #1 kinematics
 If you properly code it, IT handle follow Me handle
