@@ -58,6 +58,7 @@ Most of the test is not semi-automated since they are related to haptics and mec
 ![swith](./resources/dualpanto_switch.jpg)
    
 ## 1. Mechanical and Hardware
+(For BIS studetns: There are code to figure out whether encoder and motor works, but no good evaluation process yet. We will update asap. You can also modify code to test your purpose.)
 
 0.  [check mechanical configuration](physical_test/checklist.md)
 1. `python -m unittest test_firmware.Basic`
