@@ -1,5 +1,4 @@
 pyserial
-unittest
 platformio
 parameterized
 html-testRunner
