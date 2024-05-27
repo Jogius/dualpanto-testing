@@ -2,6 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/firmware/10 panto firmware" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/firmware/dualpantoframework" vcs="Git" />
   </component>
 </project>

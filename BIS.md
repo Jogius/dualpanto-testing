@@ -2,11 +2,49 @@
 
 We use this dualpanto-testing repo for assignment, and uploading dualpanto firmware too.
 
-**Please check and install all requirements at [Readme.md](Readme.md)**
-
 If you have issue about installing all requirements and this testing tool, **please first ask on discord #general channel.**
 Often other students have already solved issue you have. (with 60 students in 2024, there's a good chance they have solved it)
 
+
+## Requirements
+This is same as [READEM.md](./Readme.md) of dualpanto-testing.
+
+### Install the ESP32 driver
+- [Download](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads) the latest installer for your OS-Version.
+- Run the installer.
+
+### Setup C++ environment
+
+#### macOS
+ - Go to Appstore and install Xcode
+ - Run `xcode-select –install` to install the compilers
+ - Run `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
+
+#### windows
+ - Install Visual Studio 2019 or 2017
+ - Select at least the workload “Desktopentwicklung mit C++”
+
+### Install IDE
+We highly recommend to use PyCharm to run this test flow.
+#### PyCharm
+1. download [PyCharm](https://www.jetbrains.com/community/education/#students)
+2. clone this repo and open it with pycharm
+3. [create vertial environment (we use python 3.7)](https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html)and [install package using requirements.txt](https://www.jetbrains.com/help/pycharm/managing-dependencies.html)
+4. install [Mermaid](https://plugins.jetbrains.com/plugin/20146-mermaid) plugin for flowchart vis
+5. follow Test Flow section
+
+you can run  unittest from Markdown preview 
+![markdown](./resources/execute.jpg)
+
+or [execute unittest from scripts](https://www.jetbrains.com/help/pycharm/testing-your-first-python-application.html#create-test)
+#### VScode
+1. download [VScode](https://code.visualstudio.com/)
+2. clone this repo and open it with VScode
+3. [set venv and install package using requirements.txt](https://code.visualstudio.com/docs/python/environments)
+4. follow Test Flow section ([Test flow in VSCode](https://code.visualstudio.com/docs/python/testing))
+
+#### Command Line
+you can also run all unittest from command line interface if struggle with setting up IDE. Install python library in requirements.txt, then execute script.
 
 
 ## Assignment Week7: kinematics and rendering wall
