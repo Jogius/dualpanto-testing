@@ -61,8 +61,8 @@ Most of the test is not semi-automated since they are related to haptics and mec
 
 0.  [check mechanical configuration](physical_test/checklist.md)
 1. `python -m unittest test_firmware.Basic`
-2. `python -m unittest test_hardware.Linkage.test_encoder`[How to test?]()
-3. `python -m unittest test_hardware.Linkage.test_sync`[How to test?]()
+2. `python -m unittest test_hardware.Linkage.test_encoder`**WIP**
+3. `python -m unittest test_hardware.Linkage.test_sync`**WIP**
 4. `python -m unittest test_hardware.EndEffector.test_encoder` **WIP**
 5. `python -m unittest test_hardware.EndEffector.test_motor` **WIP**
 
@@ -118,7 +118,7 @@ flowchart TD;
 ## 2. Rendering Haptics = DualPanto Firmware
 
 0. [check mechanical configuration](physical_test/checklist.md)
-1. `python -m unittest test_firmware.Haptics.test_line_wall` [How to test?]()
+1. `python -m unittest test_firmware.Haptics.test_line_wall` **WIP**
 2. `python -m unittest test_firmware.Kinematics.test_kinematics_sync` **WIP**
 3. `python -m unittest test_firmware.Haptics.test_force_field` **WIP**
 4. `python -m unittest test_firmware.Haptics.test_rail` **WIP**
