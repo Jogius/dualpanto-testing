@@ -57,7 +57,7 @@ If you properly code it, IT handle follow Me handle
 
 1. make sure install ESP32 driver, IDE, and all python library on requirements.txt
 2. go to `dualpant-testing/firmware/haptics/BIS week7 Kinematics/firmware/src/hardware/panto.cpp`,find `TODO BIS` and write code
-3. `python -m unittest test_firmware.Haptics.test_BIS_week7_kinematics`
+3. `python -m unittest test_firmware.Kinematics.test_BIS_week7_kinematics`
 4. if you feel the device has issue, follow [test flow (Mechanics and Hardware)](Readme.md)
 5. take the video that linkage is synced when you intearct with ME handle.
 6. and upload to dokuwiki project page

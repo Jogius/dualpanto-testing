@@ -26,7 +26,7 @@ uint16_t buf = 0;
 
 void setup()
 {
-    Serial.begin(115200);    // opens serial port, sets data rate to 9600 bps
+    Serial.begin(9600);    // opens serial port, sets data rate to 9600 bps
 
     pinMode(13, OUTPUT);
     pinMode(c_hspiSsPin1, OUTPUT);
@@ -44,12 +44,12 @@ void setup()
     m_spi.begin();
 }
 
-void loop(){  
+void loop(){
     m_spi.beginTransaction(m_settings);
     digitalWrite(13, HIGH);
     digitalWrite(c_hspiSsPin1, HIGH);
     digitalWrite(c_hspiSsPin2, HIGH);
-    
+
 
     if (channel == 0) {digitalWrite(c_hspiSsPin2, LOW);}
     else if(channel == 1) {digitalWrite(c_hspiSsPin1, LOW);}
@@ -64,36 +64,29 @@ void loop(){
 
     delayMicroseconds(1);
 
-//    if (channel == 0){
-//        Serial.printf("\ndptest");
-//    }
+    if (channel == 0){
+        Serial.printf("\ndptest");
+    }
 
     if(channel == 0) digitalWrite(c_hspiSsPin2, LOW);
     else if(channel == 1) digitalWrite(c_hspiSsPin1, LOW);
-    if(channel == 1){
     for(auto i = 0; i < m_values.size()/2; ++i)
     {
         buf = m_spi.transfer16(c_nop);
         m_values[i + channel*2] = buf & c_dataMask;
+        Serial.printf("%d,", m_values[i + channel*2]);
 
-//        Serial.print("Encoder" + String(i));
-        Serial.print(m_values[i + channel*2]);
-        Serial.print(",");
-//        Serial.printf("%d,", m_values[i + channel*2]);
-      
-    }
-    Serial.println(0);
     }
     digitalWrite(c_hspiSsPin1, HIGH);
     digitalWrite(c_hspiSsPin2, HIGH);
 
     m_spi.endTransaction();
 
-//    if (channel == 1){
-//        for (int i = 0; i < 2; i++){
-//            Serial.printf("%d,", endeffectorEncoder[i]->read());
-//        }
-//    }
+    if (channel == 1){
+        for (int i = 0; i < 2; i++){
+            Serial.printf("%d,", endeffectorEncoder[i]->read());
+        }
+    }
 
     c_i++;
     channel = c_i % 2;

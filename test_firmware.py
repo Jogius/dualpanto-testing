@@ -66,7 +66,7 @@ class Haptics(unittest.TestCase):
         print("====================================")
         print("")
 
-        print("This test requires you to interact with dualpanto device and test it physically using test paper-jig.")
+        print("This test requires you to interact with dualpanto device and test it physically.")
         print("Please check./BIS/")
         print("When you tested, please press Enter key.")
 

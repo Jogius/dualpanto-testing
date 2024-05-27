@@ -30,10 +30,10 @@ class Linkage(unittest.TestCase):
         try:
             while serial_connection_thread.is_alive():
                 rel_pos = [self.encoder_pos[i] - start_position[i] for i in range(len(self.encoder_pos))]
-                print("Move the handles to test the encoders")
+                # print("Move the handles to test the encoders")
                 print(rel_pos)
-                print(" " * int(display_interval / display_step_size), "|")
-                # for j in range(4): # four main encoders
+                # print(" " * int(display_interval / display_step_size), "|")
+                # for j in range(4):  # four main encoders
                 #     b = True
                 #     for i in range(-display_interval, display_interval, display_step_size):
                 #         if rel_pos[j] < i and b:
@@ -45,23 +45,23 @@ class Linkage(unittest.TestCase):
                 #         print("#", end="")
                 #     print()
                 # print()
-                # for j in range(4, 6): # two endeffector encoders
+                # for j in range(4, 6):  # two endeffector encoders
                 #     print("#" * (rel_pos[j] // 4))
                 # print()
-                print("Press CTRL + C to continue")
-                time.sleep(0.05)
-                os.system('cls' if os.name == 'nt' else 'clear')
+                # print("Press CTRL + C to continue")
+                # time.sleep(0.05)
+                # os.system('cls' if os.name == 'nt' else 'clear')
         except KeyboardInterrupt:
             self.continue_serial_connection_flag = False
     def test_motor(self):
-        res = util.upload_firmware('./firmware/03 motor')
+        res = util.upload_firmware('./firmware/hardware/linkage motor')
         self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
         print("Press any key to continue")
         input()
 
     def test_sync(self):
-        res = util.upload_firmware('./firmware/05 move handles in sync')
+        res = util.upload_firmware('./firmware/hardware/linkage sync')
         self.assertEqual(res, 0, msg='failed to upload firmware')
         time.sleep(1)
         # with serial.Serial(config.COM_PORT, 9600, timeout=1) as ser:
@@ -75,8 +75,9 @@ class Linkage(unittest.TestCase):
         print("Connecting...")
         with serial.Serial(config.COM_PORT, 9600, timeout=1, parity=serial.PARITY_EVEN) as ser:
             time.sleep(1)
-            self.assertNotEqual(ser.inWaiting(), 0, msg="could not establish serial connection... try restarting the panto")
-            uint_overflow_correction = [0,0,0,0]
+            self.assertNotEqual(ser.inWaiting(), 0,
+                                msg="could not establish serial connection... try restarting the panto")
+            uint_overflow_correction = [0, 0, 0, 0]
             while self.continue_serial_connection_flag:
                 if ser.inWaiting() > 0:
                     r = str(ser.readline()).split("dptest")
@@ -87,7 +88,7 @@ class Linkage(unittest.TestCase):
                     print(new_encoder_pos)
                     # correcting the uint overflow -> 16383 (14bit max) jump to 0
                     for i in range(4):
-                        if self.encoder_pos[i] -uint_overflow_correction[i] - new_encoder_pos[i] > 10000:
+                        if self.encoder_pos[i] - uint_overflow_correction[i] - new_encoder_pos[i] > 10000:
                             uint_overflow_correction[i] += 16383
                         if self.encoder_pos[i] - uint_overflow_correction[i] - new_encoder_pos[i] < -10000:
                             uint_overflow_correction[i] -= 16383
@@ -96,9 +97,11 @@ class Linkage(unittest.TestCase):
                         # 136 steps for the endeffector encoders
                         new_encoder_pos[i] = abs(new_encoder_pos[i] % (136 * 2))
                     self.encoder_pos = new_encoder_pos
-                    #print(self.encoder_pos)
+                    # print(self.encoder_pos)
                 else:
                     time.sleep(0.01)
+
+
 
 class EndEffector(unittest.TestCase):
     def test_encoder(self):
