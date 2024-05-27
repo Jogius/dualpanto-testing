@@ -28,7 +28,7 @@ We highly recommend to use PyCharm to run this test flow.
 #### PyCharm
 1. download [PyCharm](https://www.jetbrains.com/community/education/#students)
 2. clone this repo and open it with pycharm
-3. [create vertial environment (we use python 3.7)](https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html)and [install package using requirements.txt](https://www.jetbrains.com/help/pycharm/managing-dependencies.html) (ignore errors for “unittest” for now)
+3. [create vertial environment (we use python 3.7)](https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html)and [install package using requirements.txt](https://www.jetbrains.com/help/pycharm/managing-dependencies.html)
 4. install [Mermaid](https://plugins.jetbrains.com/plugin/20146-mermaid) plugin for flowchart vis
 5. follow Test Flow section
 
@@ -39,7 +39,7 @@ or [execute unittest from scripts](https://www.jetbrains.com/help/pycharm/testin
 #### VScode
 1. download [VScode](https://code.visualstudio.com/)
 2. clone this repo and open it with VScode
-3. [set venv and install package using requirements.txt](https://code.visualstudio.com/docs/python/environments)  (ignore errors for “unittest” for now)
+3. [set venv and install package using requirements.txt](https://code.visualstudio.com/docs/python/environments) 
 4. follow Test Flow section ([Test flow in VSCode](https://code.visualstudio.com/docs/python/testing))
 
 #### Command Line
