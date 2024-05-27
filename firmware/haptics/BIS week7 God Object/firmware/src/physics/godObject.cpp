@@ -211,7 +211,7 @@ Vector2D GodObject::getCollisionForce(Vector2D godObjectPosition, Vector2D handl
 }
 
 Vector2D GodObject::getTetherForce(Vector2D error){
-    auto force = 0
+    Vector2D force = Vector2D(0,0);
     return force;
 }
 
