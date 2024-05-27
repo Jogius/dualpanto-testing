@@ -81,8 +81,8 @@ class Haptics(unittest.TestCase):
 
 class Kinematics(unittest.TestCase):
     def test_kinematics_sync(self):
-        self.assertIn(config.COM_PORT, util.serial_ports())
-
+        res = util.upload_firmware("firmware/haptics/kinematics/firmware", False)
+        self.assertEqual(res, 0, msg='failed to upload firmware. please first check platformIO config and installation')
 
     def test_BIS_week7_kinematics(self):
         res = util.upload_firmware("firmware/haptics/BIS week7 Kinematics/firmware", False)
