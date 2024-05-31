@@ -6,7 +6,7 @@ COM_PORT = "/dev/tty.SLAB_USBtoUART"
 # COM_PORT = "//.//COM3"
 
 #Linux
-# COM_PORT = "/dev/ttyUSB0"
+#COM_PORT = "/dev/ttyUSB0"
 
 ### Flag
 uploading_firmware = True
