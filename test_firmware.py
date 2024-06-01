@@ -107,3 +107,10 @@ class UploadDualPantoFramework(unittest.TestCase):
     def test_upload_dp_firmware(self):
         res = util.compile_firmware('firmware/dualpantoframework')
         self.assertEqual(res, 0, msg='failed to compile firmware. please first check platformIO config and installation')
+
+
+
+class UploadDualPantoEncoderTest(unittest.TestCase):
+    def test_upload_dp_encoder_test(self):
+        res = util.compile_firmware('firmware/encoder_driver')
+        self.assertEqual(res, 0, msg='failed to compile firmware. please first check platformIO config and installation')
