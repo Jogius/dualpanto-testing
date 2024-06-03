@@ -6,11 +6,7 @@
 # COM_PORT = "//.//COM3"
 
 #Linux
-<<<<<<< HEAD
 COM_PORT = "/dev/ttyACM0"
-=======
-#COM_PORT = "/dev/ttyUSB0"
->>>>>>> 41f9006c51e8bcaa6b58fdded8f67db952ea50d1
 
 ### Flag
 uploading_firmware = True
