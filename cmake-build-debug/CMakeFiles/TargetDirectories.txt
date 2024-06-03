@@ -1,0 +1,3 @@
+/home/jogius/Documents/hpi-studies/SoSe24/BIS/dualpanto-testing/cmake-build-debug/CMakeFiles/dualpanto_testing.dir
+/home/jogius/Documents/hpi-studies/SoSe24/BIS/dualpanto-testing/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/jogius/Documents/hpi-studies/SoSe24/BIS/dualpanto-testing/cmake-build-debug/CMakeFiles/rebuild_cache.dir

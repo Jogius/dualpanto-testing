@@ -7,6 +7,14 @@
 
 std::vector<Panto> pantos;
 
+Vector2D vectorRotate(Vector2D vec, float angle) {
+  float x = std::cos(angle) * vec.x - std::sin(angle) * vec.y;
+  float y = std::sin(angle) * vec.x - std::cos(angle) * vec.y;
+  vec.x = x;
+  vec.y = y;
+  return vec;
+}
+
 void Panto::forwardKinematics()
 {
     // base angles
@@ -35,17 +43,28 @@ void Panto::forwardKinematics()
     // once you write correct code, IT handle will follow ME handle when you move ME handle.
 
     // please comment out
-    const auto leftInnerX = 0;
-    const auto leftInnerY = 0;
-    const auto rightInnerX = 0;
-    const auto rightInnerY = 0;
+//    const auto leftInnerX = 0;
+//    const auto leftInnerY = 0;
+//    const auto rightInnerX = 0;
+//    const auto rightInnerY = 0;
     // please comment out
 
     // YOUR CODE STARTS
-//    const auto leftInnerX = ...;
-//    const auto leftInnerY = ...;
-//    const auto rightInnerX = ...;
-//    const auto rightInnerY = ...;
+
+    // Calculate left elbow
+    Vector2D l_motor(c_leftBaseX, c_leftBaseY);
+    l_motor = l_motor + vectorRotate(Vector2D(c_leftInnerLength, 0), leftBaseAngle);
+
+
+    // Calculate right elbow
+    Vector2D r_motor(c_rightBaseX, c_rightBaseY);
+    r_motor = r_motor + vectorRotate(Vector2D(c_rightInnerLength, 0), rightBaseAngle);
+
+
+    const auto leftInnerX = l_motor.x;
+    const auto leftInnerY = l_motor.y;
+    const auto rightInnerX = r_motor.x;
+    const auto rightInnerY = r_motor.y;
     // YOUR CODE ENDS
 
 

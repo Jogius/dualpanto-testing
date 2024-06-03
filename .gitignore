@@ -4,3 +4,5 @@ firmware/10 panto firmware/*
 .vscode
 __pycache__
 dualpanto-testing.code-workspace
+.idea
+

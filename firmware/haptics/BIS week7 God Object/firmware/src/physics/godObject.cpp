@@ -204,7 +204,8 @@ Vector2D GodObject::getCollisionForce(Vector2D godObjectPosition, Vector2D handl
 
     // YOUR CODE STARTS
 
-    // m_lastError = ...
+     m_lastError = godObjectPosition - handlePosition;
+     force = m_lastError * K;
 
     // YOUR CODE ENDS
     return force;

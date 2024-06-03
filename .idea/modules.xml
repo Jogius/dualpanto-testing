@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/dualpanto-testing.iml" filepath="$PROJECT_DIR$/.idea/dualpanto-testing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/dualpanto_testing.iml" filepath="$PROJECT_DIR$/.idea/dualpanto_testing.iml" />
     </modules>
   </component>
 </project>
