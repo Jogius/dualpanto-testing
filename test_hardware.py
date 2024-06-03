@@ -10,8 +10,34 @@ from utils import util
 import config
 
 class Linkage(unittest.TestCase):
-    encoder_pos = [0, 0, 0, 0]
+    encoder_pos = [0, 0, 0, 0, 0, 0]
     continue_serial_connection_flag = True
+
+    def test_mechanical(self):
+        res = util.upload_firmware('./firmware/hardware/linkage encoder')
+        self.assertEqual(res, 0, msg='failed to upload firmware')
+        time.sleep(1)
+        self.continue_serial_connection_flag = True
+        serial_connection_thread = Thread(target=self.handle_serial_connection)
+        serial_connection_thread.start()
+        print("move the upperhandle to the default position [ENTER]")
+        input()
+        start = self.encoder_pos
+        print("move the upperhandle to the rightmost position [ENTER]")
+        input()
+        mid = self.encoder_pos
+        print("move the upperhandle to the start position [ENTER]")
+        input()
+        end = self.encoder_pos
+        print(start)
+        print(mid)
+        print(end)
+        self.assertLess(abs(start[0] - end[0]), 500, "start and end position are not aligning")
+        self.assertLess(abs(start[1] - end[1]), 500, "start and end position are not aligning")
+        self.assertTrue(3500 < abs(start[0] - mid[0]) < 4500, "the left encoder of the upper handle didn't move far enough")
+        self.assertTrue(3500 < abs(start[1] - mid[1]) < 4500, "the right encoder of the upper handle didn't move far enough")
+        self.continue_serial_connection_flag = False
+
     def test_encoder(self):
         res = util.upload_firmware('./firmware/hardware/linkage encoder')
         self.assertEqual(res, 0, msg='failed to upload firmware')
@@ -49,10 +75,11 @@ class Linkage(unittest.TestCase):
                 #     print("#" * (rel_pos[j] // 4))
                 # print()
                 # print("Press CTRL + C to continue")
-                # time.sleep(0.05)
                 # os.system('cls' if os.name == 'nt' else 'clear')
+                time.sleep(0.05)
         except KeyboardInterrupt:
             self.continue_serial_connection_flag = False
+
     def test_motor(self):
         res = util.upload_firmware('./firmware/hardware/linkage motor')
         self.assertEqual(res, 0, msg='failed to upload firmware')
@@ -85,7 +112,7 @@ class Linkage(unittest.TestCase):
                         print(r, " has wrong serial format - skipping")
                         continue
                     new_encoder_pos = [int(y) for y in [x.split(",")[:-1] for x in r][1]]
-                    print(new_encoder_pos)
+                    #print(new_encoder_pos)
                     # correcting the uint overflow -> 16383 (14bit max) jump to 0
                     for i in range(4):
                         if self.encoder_pos[i] - uint_overflow_correction[i] - new_encoder_pos[i] > 10000:
